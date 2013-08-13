@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+	<groupId>redis.embedded</groupId>
+	<artifactId>embedded-redis</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>embedded-redis</name>
+	<description>Redis embedded server for Java integration testing</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>clojars</id>
+			<name>Clojars repository</name>
+			<url>https://clojars.org/repo</url>
+		</repository>
+	</distributionManagement>
+
+  <repositories>
+		<repository>
+  		<id>clojars.org</id>
+  		<url>http://clojars.org/repo</url>
+		</repository>
+  </repositories>
+
+  <dependencies>
+
+	<dependency>
+		<groupId>redis.clients</groupId>
+		<artifactId>jedis</artifactId>
+		<version>2.1.0</version>
+	</dependency>
+
+	<dependency>
+		<groupId>com.google.guava</groupId>
+		<artifactId>guava-io</artifactId>
+		<version>r03</version>
+	</dependency>
+
+	<dependency>
+		<groupId>junit</groupId>
+		<artifactId>junit</artifactId>
+		<version>4.5</version>
+		<scope>test</scope>
+	</dependency>
+	
+  </dependencies>
+
+  <build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<compilerVersion>1.6</compilerVersion>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+		</plugins>
+  </build>
+
+</project>
