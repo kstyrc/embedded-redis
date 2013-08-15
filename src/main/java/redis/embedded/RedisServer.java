@@ -13,7 +13,8 @@ public class RedisServer {
 	private static enum RedisRunScriptEnum {
 		WINDOWS_32("redis-server.exe"),
 		WINDOWS_64("redis-server-64.exe"),
-		UNIX("redis-server");
+		UNIX("redis-server"),
+		MACOSX("redis-server.app");
 		
 		private final String runScript;
 
@@ -33,8 +34,10 @@ public class RedisServer {
 				}
 			} else if (osName.indexOf("nix") >= 0 || osName.indexOf("nux") >= 0 || osName.indexOf("aix") > 0) {
 				return UNIX.runScript;
+			} else if ("Mac OS X".equals(osName)) {
+				return MACOSX.runScript;
 			} else {
-				throw new RuntimeException("Unsupported os...");
+				throw new RuntimeException("Unsupported os/architecture...: " + osName + " on " + osArch);
 			}
 		}
 	}
