@@ -21,9 +21,13 @@ public class RedisServerTest {
 	
 	@Test(expected = RuntimeException.class)
 	public void shouldNotAllowMultipleRunsWithoutStop() throws Exception {
-		redisServer = new RedisServer(6379);
-		redisServer.start();
-		redisServer.start();
+		try {
+			redisServer = new RedisServer(6379);
+			redisServer.start();
+			redisServer.start();
+		} finally {
+			redisServer.stop();
+		}
 	}
 	
 	@Test

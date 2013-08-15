@@ -69,10 +69,14 @@ public class RedisServer {
 
 	private void awaitRedisServerReady() throws IOException {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
-		String outputLine = null;
-		do {
-			outputLine = reader.readLine();
-		} while (outputLine != null && !outputLine.matches(REDIS_READY_PATTERN));
+		try {
+			String outputLine = null;
+			do {
+				outputLine = reader.readLine();
+			} while (outputLine != null && !outputLine.matches(REDIS_READY_PATTERN));
+		} finally {
+			reader.close();
+		}
 	}
 
 	private ProcessBuilder getRedisProcessBuilder() {
