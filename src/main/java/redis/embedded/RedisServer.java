@@ -61,12 +61,15 @@ public class RedisServer {
 	}
 
 	private File extractExecutableFromJar(String scriptName) throws IOException {
-		File command = new File(Files.createTempDir(), scriptName);
+		File tmpDir = Files.createTempDir();
+		tmpDir.deleteOnExit();
+		File command = new File(tmpDir, scriptName);
 		File scriptSourceFile = new File(Resources.getResource(scriptName).getFile());
+		
 		Files.copy(scriptSourceFile, command);
 		command.deleteOnExit();
 		command.setExecutable(true);
-		command.getParentFile().deleteOnExit();
+		
 		return command;
 	}
 
