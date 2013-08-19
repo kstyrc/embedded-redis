@@ -1,15 +1,10 @@
 package redis.embedded;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
@@ -51,7 +46,6 @@ public class RedisServer {
 
 	private final File command;
 	private final Integer port;
-	private final File dir;
 
 	private boolean active = false;
 	private Process redisProcess;
@@ -59,33 +53,21 @@ public class RedisServer {
 	public RedisServer(File command, Integer port) {
 		this.command = command;
 		this.port = port;
-		this.dir = command.getParentFile();
 	}
 
 	public RedisServer(Integer port) throws IOException {
-		String redisRunScript = RedisRunScriptEnum.getRedisRunScript();
-
-		this.dir = Files.createTempDir();
-		this.dir.deleteOnExit();
-
-		this.command = new File(this.dir, redisRunScript);
-
-		BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(this.command));
-		try {
-			URL url = Resources.getResource(redisRunScript);
-			BufferedInputStream bufferedInputStream = new BufferedInputStream(url.openStream());
-			try {
-				ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
-			} finally {
-				bufferedInputStream.close();
-			}
-		} finally {
-			bufferedOutputStream.close();
-		}
-		this.command.setExecutable(true);
-		this.command.deleteOnExit();
-
 		this.port = port;
+		this.command = extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+	}
+
+	private File extractExecutableFromJar(String scriptName) throws IOException {
+		File command = new File(Files.createTempDir(), scriptName);
+		File scriptSourceFile = new File(Resources.getResource(scriptName).getFile());
+		Files.copy(scriptSourceFile, command);
+		command.deleteOnExit();
+		command.setExecutable(true);
+		command.getParentFile().deleteOnExit();
+		return command;
 	}
 
 	public synchronized void start() throws IOException {
@@ -93,7 +75,7 @@ public class RedisServer {
 			throw new RuntimeException("This redis server instance is already running...");
 		}
 
-		redisProcess = getRedisProcessBuilder().start();
+		redisProcess = createRedisProcessBuilder().start();
 		active = true;
 
 		awaitRedisServerReady();
@@ -111,9 +93,9 @@ public class RedisServer {
 		}
 	}
 
-	private ProcessBuilder getRedisProcessBuilder() {
+	private ProcessBuilder createRedisProcessBuilder() {
 		ProcessBuilder pb = new ProcessBuilder(command.getAbsolutePath(), "--port", Integer.toString(port));
-		pb.directory(this.dir);
+		pb.directory(command.getParentFile());
 
 		return pb;
 	}
