@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.FileUtils;
+
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 
@@ -63,10 +65,9 @@ public class RedisServer {
 	private File extractExecutableFromJar(String scriptName) throws IOException {
 		File tmpDir = Files.createTempDir();
 		tmpDir.deleteOnExit();
+
 		File command = new File(tmpDir, scriptName);
-		File scriptSourceFile = new File(Resources.getResource(scriptName).getFile());
-		
-		Files.copy(scriptSourceFile, command);
+		FileUtils.copyURLToFile(Resources.getResource(scriptName), command);
 		command.deleteOnExit();
 		command.setExecutable(true);
 		
