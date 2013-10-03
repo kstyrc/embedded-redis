@@ -19,8 +19,8 @@
 	
 	<scm>
 		<url>https://github.com/kstyrc/embedded-redis</url>
-		<connection>scm:git:git://github.com/kstyrc/embedded-redis.git</connection>
-		<developerConnection>scm:git:git@github.com/kstyrc/embedded-redis.git</developerConnection>
+		<connection>scm:git:git@github.com:kstyrc/embedded-redis.git</connection>
+		<developerConnection>scm:git:git@github.com:kstyrc/embedded-redis.git</developerConnection>
 	</scm>
 	
 	<developers>
