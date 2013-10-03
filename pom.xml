@@ -5,9 +5,31 @@
 	<groupId>redis.embedded</groupId>
 	<artifactId>embedded-redis</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 	<name>embedded-redis</name>
 	<description>Redis embedded server for Java integration testing</description>
+	<url>https://github.com/kstyrc/embedded-redis</url>
+	
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	
+	<scm>
+		<url>https://github.com/kstyrc/embedded-redis</url>
+		<connection>https://github.com/kstyrc/embedded-redis.git</connection>
+	</scm>
+	
+	<developers>
+		<developer>
+			<id>1</id>
+			<name>Krzysztof Styrc</name>
+			<email>kstyrc@gmail.com</email>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -20,13 +42,6 @@
 			<url>https://clojars.org/repo</url>
 		</repository>
 	</distributionManagement>
-
-  <repositories>
-		<repository>
-  		<id>clojars.org</id>
-  		<url>http://clojars.org/repo</url>
-		</repository>
-  </repositories>
 
   <dependencies>
 
