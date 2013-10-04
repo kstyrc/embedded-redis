@@ -25,6 +25,12 @@ Dependency configuration:
 ```
 More at https://clojars.org/redis.embedded/embedded-redis
 
+Usage example
+==============
+
+TODO
+
+
 Redis version
 ==============
 
