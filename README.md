@@ -34,4 +34,8 @@ TODO
 Redis version
 ==============
 
-TODO: write which redis-server version we run under the hood.
+When not provided with the desired redis executable, RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
+- Redis 2.6.14 in case of Linux/Unix
+- unofficial Win32/64 port from https://github.com/MSOpenTech/redis (branch 2.6) in case of Windows
+
+However, you should provide RedisServer with redis executable if you need specific version.
