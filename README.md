@@ -28,7 +28,39 @@ More at https://clojars.org/redis.embedded/embedded-redis
 Usage example
 ==============
 
-TODO
+Running RedisServer is as simple as:
+```
+RedisServer redisServer = new RedisServer(6379);
+redisServer.start();
+// do some work
+redisServer.stop();
+```
+You can also provide RedisServer with your own redis executable to run:
+```
+RedisServer redisServer = new RedisServer("/path/to/your/redis", 6379);
+```
+A simple redis integration test would look like this:
+```
+public class SomeIntegrationTestThatRequiresRedis {
+  private RedisServer redisServer;
+  
+  @Before
+  public void setup() throws Exception {
+    redisServer = new RedisServer(6379); // or new RedisServer("/path/to/your/redis", 6379);
+    redisServer.start();
+  }
+  
+  @Test
+  public void test() throws Exception {
+    // testing code that requires redis running
+  }
+  
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
+  }
+}
+```
 
 
 Redis version
