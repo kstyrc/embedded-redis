@@ -1,6 +1,8 @@
 package redis.embedded;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -67,4 +69,26 @@ public class RedisServerTest {
 			redisServer.stop();
 		}
 	}
+
+    @Test
+    public void shouldIndicateInactiveBeforeStart() throws Exception {
+        redisServer = new RedisServer(6379);
+        assertFalse(redisServer.isActive());
+    }
+
+    @Test
+    public void shouldIndicateActiveAfterStart() throws Exception {
+        redisServer = new RedisServer(6379);
+        redisServer.start();
+        assertTrue(redisServer.isActive());
+        redisServer.stop();
+    }
+
+    @Test
+    public void shouldIndicateInactiveAfterStop() throws Exception {
+        redisServer = new RedisServer(6379);
+        redisServer.start();
+        redisServer.stop();
+        assertFalse(redisServer.isActive());
+    }
 }
