@@ -49,7 +49,7 @@ public class RedisServer {
 	private final File command;
 	private final Integer port;
 
-	private boolean active = false;
+	private volatile boolean active = false;
 	private Process redisProcess;
 
 	public RedisServer(File command, Integer port) {
@@ -73,6 +73,10 @@ public class RedisServer {
 		
 		return command;
 	}
+	
+	public boolean isActive() {
+		return active;
+	}
 
 	public synchronized void start() throws IOException {
 		if (active) {
@@ -80,9 +84,8 @@ public class RedisServer {
 		}
 
 		redisProcess = createRedisProcessBuilder().start();
-		active = true;
-
 		awaitRedisServerReady();
+		active = true;
 	}
 
 	private void awaitRedisServerReady() throws IOException {
