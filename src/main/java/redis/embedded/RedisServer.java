@@ -25,18 +25,18 @@ public class RedisServer {
 		}
 		
 		public static String getRedisRunScript() {
-			String osName = System.getProperty("os.name");
-			String osArch = System.getProperty("os.arch");
-			
-			if (osName.toLowerCase().indexOf("win") >= 0) {
-				if (osArch.indexOf("64") >= 0) {
+			String osName = System.getProperty("os.name").toLowerCase();
+			String osArch = System.getProperty("os.arch").toLowerCase();
+
+			if (osName.contains("win")) {
+				if (osArch.contains("64")) {
 					return WINDOWS_64.runScript;
 				} else {
 					return WINDOWS_32.runScript;
 				}
-			} else if (osName.indexOf("nix") >= 0 || osName.indexOf("nux") >= 0 || osName.indexOf("aix") > 0) {
+			} else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
 				return UNIX.runScript;
-			} else if ("Mac OS X".equals(osName)) {
+			} else if ("Mac OS X".equalsIgnoreCase(osName)) {
 				return MACOSX.runScript;
 			} else {
 				throw new RuntimeException("Unsupported os/architecture...: " + osName + " on " + osArch);
