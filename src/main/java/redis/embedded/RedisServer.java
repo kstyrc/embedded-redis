@@ -28,7 +28,7 @@ public class RedisServer {
 			String osName = System.getProperty("os.name");
 			String osArch = System.getProperty("os.arch");
 			
-			if (osName.indexOf("win") >= 0) {
+			if (osName.toLowerCase().indexOf("win") >= 0) {
 				if (osArch.indexOf("64") >= 0) {
 					return WINDOWS_64.runScript;
 				} else {
