@@ -103,13 +103,15 @@ public class RedisServer {
 	private ProcessBuilder createRedisProcessBuilder() {
 		ProcessBuilder pb = new ProcessBuilder(command.getAbsolutePath(), "--port", Integer.toString(port));
 		pb.directory(command.getParentFile());
+		pb.redirectErrorStream();
 
 		return pb;
 	}
 
-	public synchronized void stop() {
+	public synchronized void stop() throws InterruptedException {
 		if (active) {
 			redisProcess.destroy();
+			redisProcess.waitFor();
 			active = false;
 		}
 	}
