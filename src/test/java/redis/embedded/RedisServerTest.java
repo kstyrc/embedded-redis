@@ -38,11 +38,9 @@ public class RedisServerTest {
 		redisServer.start();
 		redisServer.stop();
 		
-		Thread.sleep(200L);
 		redisServer.start();
 		redisServer.stop();
 		
-		Thread.sleep(200L);
 		redisServer.start();
 		redisServer.stop();
 	}
