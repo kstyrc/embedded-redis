@@ -20,7 +20,7 @@ Dependency configuration:
 <dependency>
   <groupId>redis.embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.1</version>
+  <version>0.2</version>
 </dependency>
 ```
 More at https://clojars.org/redis.embedded/embedded-redis
