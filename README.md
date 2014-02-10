@@ -39,6 +39,25 @@ You can also provide RedisServer with your own redis executable to run:
 ```
 RedisServer redisServer = new RedisServer("/path/to/your/redis", 6379);
 ```
+You can also use fluent API to create RedisServer:
+```
+RedisServer redisServer = RedisServer.builder()
+  .executable("/path/to/your/redis")
+  .port(6379)
+  .slaveOf("locahost", 6378)
+  .configFile("/path/to/your/redis.conf")
+  .build();
+```
+Or even create simple redis.conf file from scratch:
+```
+RedisServer redisServer = RedisServer.builder()
+  .executable("/path/to/your/redis")
+  .port(6379)
+  .slaveOf("locahost", 6378)
+  .setting("daemonize no")
+  .setting("appendonly no")
+  .build();
+```
 A simple redis integration test would look like this:
 ```
 public class SomeIntegrationTestThatRequiresRedis {
