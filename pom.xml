@@ -4,7 +4,7 @@
     <groupId>redis.embedded</groupId>
     <artifactId>embedded-redis</artifactId>
     <packaging>jar</packaging>
-    <version>0.3</version>
+    <version>0.3-SNAPSHOT</version>
     <name>embedded-redis</name>
     <description>Redis embedded server for Java integration testing</description>
     <url>https://github.com/kstyrc/embedded-redis</url>
