@@ -50,7 +50,7 @@ public class RedisServer {
 
     public static class Builder {
 
-        private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+        private static final String LINE_SEPARATOR = File.separator;
 
         private File executable;
         private Integer port;
