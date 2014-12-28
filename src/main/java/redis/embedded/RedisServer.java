@@ -123,7 +123,7 @@ public class RedisServer {
         }
 
         private List<String> buildCommandArgs() {
-            List<String> args = new ArrayList<String>();
+            List<String> args = new ArrayList<>();
             args.add(executable.getAbsolutePath());
 
             if (!Strings.isNullOrEmpty(redisConf)) {
@@ -168,7 +168,7 @@ public class RedisServer {
     }
 
     private RedisServer(List<String> args) {
-        this.args = new ArrayList<String>(args);
+        this.args = new ArrayList<>(args);
     }
 
     public static Builder builder() {
@@ -189,20 +189,17 @@ public class RedisServer {
 	}
 
 	private void awaitRedisServerReady() throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
-		try {
-			String outputLine = null;
-			do {
-				outputLine = reader.readLine();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()))) {
+            String outputLine = null;
+            do {
+                outputLine = reader.readLine();
 
                 if (outputLine == null) {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
             } while (!outputLine.matches(REDIS_READY_PATTERN));
-		} finally {
-			reader.close();
-		}
+        }
 	}
 
 	private ProcessBuilder createRedisProcessBuilder() {
