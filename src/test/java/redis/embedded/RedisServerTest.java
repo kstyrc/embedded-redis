@@ -1,13 +1,10 @@
 package redis.embedded;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+
+import static org.junit.Assert.*;
 
 public class RedisServerTest {
 
@@ -60,7 +57,6 @@ public class RedisServerTest {
 			assertEquals("1", jedis.mget("abc").get(0));
 			assertEquals("2", jedis.mget("def").get(0));
 			assertEquals(null, jedis.mget("xyz").get(0));
-			pool.returnResource(jedis);
 		} finally {
 			if (jedis != null)
 				pool.returnResource(jedis);

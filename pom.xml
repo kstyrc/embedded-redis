@@ -45,11 +45,16 @@
     </distributionManagement>
 
     <dependencies>
-
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>2.1.0</version>
+            <version>2.6.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -75,7 +80,7 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
-            <version>1.1.0.RELEASE</version>
+            <version>1.4.1.RELEASE</version>
             <scope>test</scope>
         </dependency>
 
