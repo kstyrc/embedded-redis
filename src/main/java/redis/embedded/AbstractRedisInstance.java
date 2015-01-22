@@ -16,10 +16,6 @@ abstract class AbstractRedisInstance implements RedisInstance {
     private volatile boolean active = false;
 	private Process redisProcess;
 
-	public static RedisServerBuilder builder() {
-        return new RedisServerBuilder();
-    }
-
 	@Override
     public boolean isActive() {
         return active;
@@ -36,9 +32,8 @@ abstract class AbstractRedisInstance implements RedisInstance {
     }
 
 	private void awaitRedisServerReady() throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
-        try {
-            String outputLine = null;
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()))) {
+            String outputLine;
             do {
                 outputLine = reader.readLine();
 
@@ -47,8 +42,6 @@ abstract class AbstractRedisInstance implements RedisInstance {
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
             } while (!outputLine.matches(REDIS_READY_PATTERN));
-        } finally {
-            reader.close();
         }
     }
 

@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
-    RedisServer(Integer port) throws IOException {
+    public RedisServer(Integer port) throws IOException {
         File executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
@@ -17,7 +17,7 @@ public class RedisServer extends AbstractRedisInstance {
         );
 	}
 
-    RedisServer(File executable, Integer port) {
+    public RedisServer(File executable, Integer port) {
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
                 "--port", Integer.toString(port)
@@ -28,4 +28,7 @@ public class RedisServer extends AbstractRedisInstance {
         this.args = new ArrayList<>(args);
     }
 
+    public static RedisServerBuilder builder() {
+        return new RedisServerBuilder();
+    }
 }

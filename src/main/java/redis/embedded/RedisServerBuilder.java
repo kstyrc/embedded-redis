@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class RedisServerBuilder {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    private static final String CONF_FILENAME = "embedded-redis-server";
 
     private File executable;
     private Integer port;
@@ -73,7 +74,7 @@ public class RedisServerBuilder {
 
     public RedisServer build() throws IOException {
         if (redisConf == null && redisConfigBuilder != null) {
-            File redisConfigFile = File.createTempFile("embedded-redis", ".conf");
+            File redisConfigFile = File.createTempFile(CONF_FILENAME, ".conf");
             redisConfigFile.deleteOnExit();
             Files.write(redisConfigBuilder.toString(), redisConfigFile, Charset.forName("UTF-8"));
             redisConf = redisConfigFile.getAbsolutePath();
@@ -87,8 +88,11 @@ public class RedisServerBuilder {
         return new RedisServer(args);
     }
 
-    private List<String> buildCommandArgs() {
-        List<String> args = new ArrayList<String>();
+    private List<String> buildCommandArgs() throws IOException {
+        List<String> args = new ArrayList<>();
+        if (executable == null) {
+            executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+        }
         args.add(executable.getAbsolutePath());
 
         if (!Strings.isNullOrEmpty(redisConf)) {
