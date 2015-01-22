@@ -1,5 +1,7 @@
 package redis.embedded;
 
+import redis.embedded.exceptions.EmbeddedRedisException;
+
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by piotrturek on 22/01/15.
  */
-abstract class AbstractRedisInstance implements RedisInstance {
+abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
 	private Process redisProcess;
@@ -22,14 +24,18 @@ abstract class AbstractRedisInstance implements RedisInstance {
     }
 
 	@Override
-    public synchronized void start() throws IOException {
+    public synchronized void start() throws EmbeddedRedisException {
         if (active) {
-            throw new RuntimeException("This redis server instance is already running...");
+            throw new EmbeddedRedisException("This redis server instance is already running...");
         }
-        redisProcess = createRedisProcessBuilder().start();
-        logErrors();
-        awaitRedisServerReady();
-        active = true;
+        try {
+            redisProcess = createRedisProcessBuilder().start();
+            logErrors();
+            awaitRedisServerReady();
+            active = true;
+        } catch (IOException e) {
+            throw new EmbeddedRedisException("Failed to start Reddis instance", e);
+        }
     }
 
     private void logErrors() {
@@ -70,11 +76,19 @@ abstract class AbstractRedisInstance implements RedisInstance {
     }
 
     @Override
-    public synchronized void stop() throws InterruptedException {
+    public synchronized void stop() throws EmbeddedRedisException {
         if (active) {
             redisProcess.destroy();
-            redisProcess.waitFor();
+            tryWaitFor();
             active = false;
+        }
+    }
+
+    private void tryWaitFor() {
+        try {
+            redisProcess.waitFor();
+        } catch (InterruptedException e) {
+            throw new EmbeddedRedisException("Failed to stop redis instance", e);
         }
     }
 }
