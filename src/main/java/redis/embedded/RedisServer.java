@@ -9,6 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
+    private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    private static final int DEFAULT_REDIS_PORT = 6379;
+
+    public RedisServer() throws IOException {
+        this(DEFAULT_REDIS_PORT);
+    }
+
     public RedisServer(Integer port) throws IOException {
         File executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
         this.args = Arrays.asList(
@@ -30,5 +37,10 @@ public class RedisServer extends AbstractRedisInstance {
 
     public static RedisServerBuilder builder() {
         return new RedisServerBuilder();
+    }
+
+    @Override
+    protected String redisReadyPattern() {
+        return REDIS_READY_PATTERN;
     }
 }

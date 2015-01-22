@@ -19,7 +19,7 @@ public class RedisSentinelBuilder {
     private static final String MASTER_MONITOR_LINE = "sentinel monitor %s 127.0.0.1 %d 1";
     private static final String DOWN_AFTER_LINE = "sentinel down-after-milliseconds %s %d";
     private static final String FAILOVER_LINE = "sentinel failover-timeout %s %d";
-    private static final String PARALLEL_SYNCS_LINE = "parallel-syncs %s %d";
+    private static final String PARALLEL_SYNCS_LINE = "sentinel parallel-syncs %s %d";
 
     private File executable;
     private Integer port;
@@ -129,9 +129,9 @@ public class RedisSentinelBuilder {
         Preconditions.checkNotNull(sentinelConf);
 
         List<String> args = new ArrayList<>();
+        args.add(executable.getAbsolutePath());
         args.add(sentinelConf);
         args.add("--sentinel");
-        args.add(executable.getAbsolutePath());
 
         if (port != null) {
             args.add("--port");

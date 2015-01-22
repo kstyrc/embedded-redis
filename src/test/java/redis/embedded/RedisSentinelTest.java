@@ -1,17 +1,20 @@
 package redis.embedded;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Test;
 
 public class RedisSentinelTest {
+    private RedisSentinel sentinel;
+    private RedisServer server;
 
-    @Before
-    public void setUp() throws Exception {
-
+    @Test(timeout = 3000L)
+    public void testSimpleRun() throws Exception {
+        server = new RedisServer();
+        sentinel = RedisSentinel.builder().build();
+        sentinel.start();
+        server.start();
+        Thread.sleep(1000L);
+        server.stop();
+        sentinel.stop();
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
 }
