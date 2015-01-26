@@ -2,6 +2,8 @@ package redis.embedded;
 
 import org.junit.Test;
 
+import java.util.concurrent.TimeUnit;
+
 public class RedisSentinelTest {
     private RedisSentinel sentinel;
     private RedisServer server;
@@ -12,7 +14,7 @@ public class RedisSentinelTest {
         sentinel = RedisSentinel.builder().build();
         sentinel.start();
         server.start();
-        Thread.sleep(1000L);
+        TimeUnit.SECONDS.sleep(1);
         server.stop();
         sentinel.stop();
     }

@@ -2,6 +2,7 @@ package redis.embedded;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
+import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.JarUtil;
 
 import java.io.File;
@@ -16,18 +17,20 @@ import java.util.List;
 public class RedisSentinelBuilder {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final String CONF_FILENAME = "embedded-redis-sentinel";
-    private static final String MASTER_MONITOR_LINE = "sentinel monitor %s 127.0.0.1 %d 1";
+    private static final String MASTER_MONITOR_LINE = "sentinel monitor %s 127.0.0.1 %d %d";
     private static final String DOWN_AFTER_LINE = "sentinel down-after-milliseconds %s %d";
     private static final String FAILOVER_LINE = "sentinel failover-timeout %s %d";
     private static final String PARALLEL_SYNCS_LINE = "sentinel parallel-syncs %s %d";
+    private static final String PORT_LINE = "port %d";
 
     private File executable;
-    private Integer port;
+    private Integer port = 26379;
     private int masterPort = 6379;
     private String masterName = "mymaster";
     private long downAfterMilliseconds = 60000L;
     private long failoverTimeout = 180000L;
     private int parallelSyncs = 1;
+    private int quorumSize = 1;
     private String sentinelConf;
 
     private StringBuilder redisConfigBuilder;
@@ -54,6 +57,11 @@ public class RedisSentinelBuilder {
 
     public RedisSentinelBuilder masterName(String masterName) {
         this.masterName = masterName;
+        return this;
+    }
+
+    public RedisSentinelBuilder quorumSize(int quorumSize) {
+        this.quorumSize = quorumSize;
         return this;
     }
 
@@ -94,35 +102,51 @@ public class RedisSentinelBuilder {
         return this;
     }
 
-    public RedisSentinel build() throws IOException {
-        if (sentinelConf == null) {
-            resolveSentinelConf();
-        }
-        if (executable == null) {
-            executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
-        }
-
+    public RedisSentinel build() {
+        tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
         return new RedisSentinel(args);
     }
 
+    private void tryResolveConfAndExec() {
+        try {
+            if (sentinelConf == null) {
+                resolveSentinelConf();
+            }
+            if (executable == null) {
+                executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+            }
+        } catch (IOException e) {
+            throw new RedisBuildingException("Could not build sentinel instance", e);
+        }
+    }
+
+    public void reset() {
+        this.redisConfigBuilder = null;
+    }
+
+    public void addDefaultReplicationGroup() {
+        setting(String.format(MASTER_MONITOR_LINE, masterName, masterPort, quorumSize));
+        setting(String.format(DOWN_AFTER_LINE, masterName, downAfterMilliseconds));
+        setting(String.format(FAILOVER_LINE, masterName, failoverTimeout));
+        setting(String.format(PARALLEL_SYNCS_LINE, masterName, parallelSyncs));
+    }
+
     private void resolveSentinelConf() throws IOException {
         if (redisConfigBuilder == null) {
-            useDefaultConfig();
+            addDefaultReplicationGroup();
         }
+        setting(String.format(PORT_LINE, port));
         final String configString = redisConfigBuilder.toString();
 
-        File redisConfigFile = File.createTempFile(CONF_FILENAME, ".conf");
+        File redisConfigFile = File.createTempFile(resolveConfigName(), ".conf");
         redisConfigFile.deleteOnExit();
         Files.write(configString, redisConfigFile, Charset.forName("UTF-8"));
         sentinelConf = redisConfigFile.getAbsolutePath();
     }
 
-    private void useDefaultConfig() {
-        setting(String.format(MASTER_MONITOR_LINE, masterName, masterPort));
-        setting(String.format(DOWN_AFTER_LINE, masterName, downAfterMilliseconds));
-        setting(String.format(FAILOVER_LINE, masterName, failoverTimeout));
-        setting(String.format(PARALLEL_SYNCS_LINE, masterName, parallelSyncs));
+    private String resolveConfigName() {
+        return CONF_FILENAME + "_" + port;
     }
 
     private List<String> buildCommandArgs() {

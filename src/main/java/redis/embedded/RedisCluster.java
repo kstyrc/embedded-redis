@@ -12,7 +12,7 @@ public class RedisCluster implements Redis {
     private final List<Redis> sentinels = new LinkedList<>();
     private final List<Redis> servers = new LinkedList<>();
 
-    public RedisCluster(List<Redis> sentinels, List<Redis> servers) {
+    RedisCluster(List<Redis> sentinels, List<Redis> servers) {
         this.servers.addAll(servers);
         this.sentinels.addAll(sentinels);
     }
@@ -32,5 +32,9 @@ public class RedisCluster implements Redis {
     public void stop() throws EmbeddedRedisException {
         servers.parallelStream().forEach(Redis::stop);
         sentinels.parallelStream().forEach(Redis::stop);
+    }
+
+    public static RedisClusterBuilder builder() {
+        return new RedisClusterBuilder();
     }
 }

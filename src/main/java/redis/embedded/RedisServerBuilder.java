@@ -2,6 +2,7 @@ package redis.embedded;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.JarUtil;
 
 import java.io.File;
@@ -72,9 +73,28 @@ public class RedisServerBuilder {
         return this;
     }
 
-    public RedisServer build() throws IOException {
+    public RedisServer build() {
+        tryResolveConfAndExec();
+        List<String> args = buildCommandArgs();
+        return new RedisServer(args);
+    }
+
+    public void reset() {
+        this.redisConfigBuilder = null;
+        this.slaveOf = null;
+    }
+
+    private void tryResolveConfAndExec() {
+        try {
+            resolveConfAndExec();
+        } catch (IOException e) {
+            throw new RedisBuildingException("Could not build server instance", e);
+        }
+    }
+
+    private void resolveConfAndExec() throws IOException {
         if (redisConf == null && redisConfigBuilder != null) {
-            File redisConfigFile = File.createTempFile(CONF_FILENAME, ".conf");
+            File redisConfigFile = File.createTempFile(resolveConfigName(), ".conf");
             redisConfigFile.deleteOnExit();
             Files.write(redisConfigBuilder.toString(), redisConfigFile, Charset.forName("UTF-8"));
             redisConf = redisConfigFile.getAbsolutePath();
@@ -83,16 +103,14 @@ public class RedisServerBuilder {
         if (executable == null) {
             executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
         }
-
-        List<String> args = buildCommandArgs();
-        return new RedisServer(args);
     }
 
-    private List<String> buildCommandArgs() throws IOException {
+    private String resolveConfigName() {
+        return CONF_FILENAME + "_" + port;
+    }
+
+    private List<String> buildCommandArgs() {
         List<String> args = new ArrayList<>();
-        if (executable == null) {
-            executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
-        }
         args.add(executable.getAbsolutePath());
 
         if (!Strings.isNullOrEmpty(redisConf)) {
