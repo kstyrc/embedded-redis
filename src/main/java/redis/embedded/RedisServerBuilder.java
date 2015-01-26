@@ -53,7 +53,7 @@ public class RedisServerBuilder {
 
     public RedisServerBuilder configFile(String redisConf) {
         if (redisConfigBuilder != null) {
-            throw new RuntimeException("Redis configuration is already partially build using setting(String) method!");
+            throw new RedisBuildingException("Redis configuration is already partially build using setting(String) method!");
         }
         this.redisConf = redisConf;
         return this;
@@ -61,7 +61,7 @@ public class RedisServerBuilder {
 
     public RedisServerBuilder setting(String configLine) {
         if (redisConf != null) {
-            throw new RuntimeException("Redis configuration is already set using redis conf file!");
+            throw new RedisBuildingException("Redis configuration is already set using redis conf file!");
         }
 
         if (redisConfigBuilder == null) {
@@ -82,6 +82,7 @@ public class RedisServerBuilder {
     public void reset() {
         this.redisConfigBuilder = null;
         this.slaveOf = null;
+        this.redisConf = null;
     }
 
     private void tryResolveConfAndExec() {

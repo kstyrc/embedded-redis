@@ -82,7 +82,7 @@ public class RedisSentinelBuilder {
 
     public RedisSentinelBuilder configFile(String redisConf) {
         if (redisConfigBuilder != null) {
-            throw new RuntimeException("Redis configuration is already partially build using setting(String) method!");
+            throw new RedisBuildingException("Redis configuration is already partially build using setting(String) method!");
         }
         this.sentinelConf = redisConf;
         return this;
@@ -90,7 +90,7 @@ public class RedisSentinelBuilder {
 
     public RedisSentinelBuilder setting(String configLine) {
         if (sentinelConf != null) {
-            throw new RuntimeException("Redis configuration is already set using redis conf file!");
+            throw new RedisBuildingException("Redis configuration is already set using redis conf file!");
         }
 
         if (redisConfigBuilder == null) {
@@ -123,6 +123,7 @@ public class RedisSentinelBuilder {
 
     public void reset() {
         this.redisConfigBuilder = null;
+        this.sentinelConf = null;
     }
 
     public void addDefaultReplicationGroup() {

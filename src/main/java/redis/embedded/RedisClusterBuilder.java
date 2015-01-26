@@ -32,6 +32,11 @@ public class RedisClusterBuilder {
         return this;
     }
 
+    public RedisClusterBuilder sentinelStartingPort(int startingPort) {
+        this.currentSentinelPort = startingPort;
+        return this;
+    }
+
     public RedisClusterBuilder quorumSize(int quorumSize) {
         this.quorumSize = quorumSize;
         return this;
