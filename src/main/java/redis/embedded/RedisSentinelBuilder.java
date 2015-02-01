@@ -105,7 +105,7 @@ public class RedisSentinelBuilder {
     public RedisSentinel build() {
         tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
-        return new RedisSentinel(args);
+        return new RedisSentinel(args, port);
     }
 
     private void tryResolveConfAndExec() {

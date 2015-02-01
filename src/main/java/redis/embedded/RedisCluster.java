@@ -1,9 +1,12 @@
 package redis.embedded;
 
+import com.google.common.collect.Lists;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by piotrturek on 22/01/15.
@@ -32,6 +35,30 @@ public class RedisCluster implements Redis {
     public void stop() throws EmbeddedRedisException {
         servers.parallelStream().forEach(Redis::stop);
         sentinels.parallelStream().forEach(Redis::stop);
+    }
+
+    @Override
+    public List<Integer> ports() {
+        return Stream.concat(
+                sentinels.stream().flatMap(s -> s.ports().stream()),
+                servers.stream().flatMap(s -> s.ports().stream())
+        ).collect(Collectors.toList());
+    }
+
+    public List<Redis> sentinels() {
+        return Lists.newLinkedList(sentinels);
+    }
+
+    public List<Integer> sentinelPorts() {
+        return sentinels.stream().flatMap(s -> s.ports().stream()).collect(Collectors.toList());
+    }
+
+    public List<Redis> servers() {
+        return Lists.newLinkedList(servers);
+    }
+
+    public List<Integer> serverPorts() {
+        return servers.stream().flatMap(s -> s.ports().stream()).collect(Collectors.toList());
     }
 
     public static RedisClusterBuilder builder() {

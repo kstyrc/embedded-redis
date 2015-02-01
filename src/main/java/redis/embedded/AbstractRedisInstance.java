@@ -3,6 +3,7 @@ package redis.embedded;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,10 +16,15 @@ abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
 	private Process redisProcess;
+    private final int port;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-	@Override
+    protected AbstractRedisInstance(int port) {
+        this.port = port;
+    }
+
+    @Override
     public boolean isActive() {
         return active;
     }
@@ -90,5 +96,10 @@ abstract class AbstractRedisInstance implements Redis {
         } catch (InterruptedException e) {
             throw new EmbeddedRedisException("Failed to stop redis instance", e);
         }
+    }
+
+    @Override
+    public List<Integer> ports() {
+        return Arrays.asList(port);
     }
 }
