@@ -20,7 +20,7 @@ public class RedisServerBuilder {
     private static final String CONF_FILENAME = "embedded-redis-server";
 
     private File executable;
-    private Integer port;
+    private Integer port = 6379;
     private InetSocketAddress slaveOf;
     private String redisConf;
 
@@ -76,7 +76,7 @@ public class RedisServerBuilder {
     public RedisServer build() {
         tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
-        return new RedisServer(args);
+        return new RedisServer(args, port);
     }
 
     public void reset() {

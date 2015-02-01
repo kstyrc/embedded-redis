@@ -1,5 +1,10 @@
 package redis.embedded;
 
+import redis.embedded.ports.EphemeralPortProvider;
+import redis.embedded.ports.PredefinedPortProvider;
+import redis.embedded.ports.SequencePortProvider;
+
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,8 +18,8 @@ public class RedisClusterBuilder {
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();
     private int sentinelCount = 1;
     private int quorumSize = 1;
-    private int currentSentinelPort = 26379;
-    private int currentReplicationGroupPort = 6379;
+    private PortProvider sentinelPortProvider = new SequencePortProvider(26379);
+    private PortProvider replicationGroupPortProvider = new SequencePortProvider(6379);
     private final List<ReplicationGroup> groups = new LinkedList<>();
 
     public RedisClusterBuilder withSentinelBuilder(RedisSentinelBuilder sentinelBuilder) {
@@ -27,13 +32,41 @@ public class RedisClusterBuilder {
         return this;
     }
 
+    public RedisClusterBuilder sentinelPorts(Collection<Integer> ports) {
+        this.sentinelPortProvider = new PredefinedPortProvider(ports);
+        this.sentinelCount = ports.size();
+        return this;
+    }
+
+    public RedisClusterBuilder serverPorts(Collection<Integer> ports) {
+        this.replicationGroupPortProvider = new PredefinedPortProvider(ports);
+        return this;
+    }
+
+    public RedisClusterBuilder ephemeralSentinels() {
+        this.sentinelPortProvider = new EphemeralPortProvider();
+        return this;
+    }
+
+    public RedisClusterBuilder ephemeralServers() {
+        this.replicationGroupPortProvider = new EphemeralPortProvider();
+        return this;
+    }
+
+
+    public RedisClusterBuilder ephemeral() {
+        ephemeralSentinels();
+        ephemeralServers();
+        return this;
+    }
+
     public RedisClusterBuilder sentinelCount(int sentinelCount) {
         this.sentinelCount = sentinelCount;
         return this;
     }
 
     public RedisClusterBuilder sentinelStartingPort(int startingPort) {
-        this.currentSentinelPort = startingPort;
+        this.sentinelPortProvider = new SequencePortProvider(startingPort);
         return this;
     }
 
@@ -43,7 +76,7 @@ public class RedisClusterBuilder {
     }
 
     public RedisClusterBuilder replicationGroup(String masterName, int slaveCount) {
-        this.groups.add(new ReplicationGroup(masterName, slaveCount, nextReplicationGroupPort(slaveCount)));
+        this.groups.add(new ReplicationGroup(masterName, slaveCount, this.replicationGroupPortProvider));
         return this;
     }
 
@@ -99,28 +132,19 @@ public class RedisClusterBuilder {
     }
 
     private int nextSentinelPort() {
-        return currentSentinelPort++;
-    }
-
-    private int nextReplicationGroupPort(int slaveCount) {
-        final int toReturn = this.currentReplicationGroupPort;
-        currentReplicationGroupPort += slaveCount + 1;
-        return toReturn;
+        return sentinelPortProvider.next();
     }
 
     private static class ReplicationGroup {
-        private final int slaveCount;
         private final String masterName;
         private final int masterPort;
         private final List<Integer> slavePorts = new LinkedList<>();
 
-        private ReplicationGroup(String masterName, int slaveCount, int portsStart) {
+        private ReplicationGroup(String masterName, int slaveCount, PortProvider portProvider) {
             this.masterName = masterName;
-            this.slaveCount = slaveCount;
-            masterPort = portsStart;
+            masterPort = portProvider.next();
             while (slaveCount-- > 0) {
-                portsStart += 1;
-                slavePorts.add(portsStart);
+                slavePorts.add(portProvider.next());
             }
         }
     }
