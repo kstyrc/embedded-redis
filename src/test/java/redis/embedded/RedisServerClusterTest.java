@@ -40,7 +40,6 @@ public class RedisServerClusterTest {
             assertEquals("1", jedis.mget("abc").get(0));
             assertEquals("2", jedis.mget("def").get(0));
             assertEquals(null, jedis.mget("xyz").get(0));
-            pool.returnResource(jedis);
         } finally {
             if (jedis != null)
                 pool.returnResource(jedis);

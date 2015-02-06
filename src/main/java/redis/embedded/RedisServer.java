@@ -56,6 +56,7 @@ public class RedisServer {
         private Integer port;
         private InetSocketAddress slaveOf;
         private String redisConf;
+        private boolean sentinel = false;
 
         private StringBuilder redisConfigBuilder;
 
@@ -83,6 +84,14 @@ public class RedisServer {
             this.slaveOf = slaveOf;
             return this;
         }
+        
+        public Builder sentinel() {
+            this.sentinel = true;
+            if (port == null) {
+                port = 26379;
+            }
+            return this;
+        }
 
         public Builder configFile(String redisConf) {
             if (redisConfigBuilder != null) {
@@ -107,6 +116,11 @@ public class RedisServer {
         }
 
         public RedisServer build() throws IOException {
+            
+            if (sentinel && redisConf == null && redisConfigBuilder == null) {
+                redisConfigBuilder = new StringBuilder();
+            }
+
             if (redisConf == null && redisConfigBuilder != null) {
                 File redisConfigFile = File.createTempFile("embedded-redis", ".conf");
                 redisConfigFile.deleteOnExit();
@@ -140,20 +154,31 @@ public class RedisServer {
                 args.add(slaveOf.getHostName());
                 args.add(Integer.toString(slaveOf.getPort()));
             }
+            
+            if (sentinel) {
+                args.add("--sentinel");
+            }
 
             return args;
         }
     }
 
 	private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+        private static final String SENTINEL_READY_PATTERN = ".*Running in sentinel mode.*";
+        private static final int DEFAULT_PORT = 6379;
+        private static final int DEFAULT_SENTINEL_PORT = 26379;
 
-    private final List<String> args;
+        private final List<String> args;
 
 	private volatile boolean active = false;
 	private Process redisProcess;
+        private String host = "127.0.0.1";
+        private final int port;
+        private boolean sentinel;
 
 	public RedisServer(Integer port) throws IOException {
         File executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+        this.port = port;
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
                 "--port", Integer.toString(port)
@@ -161,6 +186,7 @@ public class RedisServer {
 	}
 
     public RedisServer(File executable, Integer port) {
+        this.port = port;
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
                 "--port", Integer.toString(port)
@@ -168,6 +194,19 @@ public class RedisServer {
     }
 
     private RedisServer(List<String> args) {
+        sentinel = args.indexOf("--sentinel") != -1;
+        int ihost = args.indexOf("--host");
+        if (ihost != -1) {
+            this.host = args.get(ihost + 1);
+        }
+        int iport = args.indexOf("--port");
+        if (iport != -1) {
+            this.port = Integer.parseInt(args.get(iport + 1));
+        } else if (sentinel) {
+            this.port = DEFAULT_SENTINEL_PORT;
+        } else {
+            this.port = DEFAULT_PORT;
+        }
         this.args = new ArrayList<String>(args);
     }
 
@@ -175,6 +214,14 @@ public class RedisServer {
         return new Builder();
     }
 
+    public String getHost() {
+        return host;
+    }
+    
+    public int getPort() {
+        return port;
+    }
+    
 	public boolean isActive() {
 		return active;
 	}
@@ -192,14 +239,15 @@ public class RedisServer {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
 		try {
 			String outputLine = null;
-			do {
-				outputLine = reader.readLine();
+			String pattern = sentinel ? SENTINEL_READY_PATTERN : REDIS_READY_PATTERN;
+                        do {
+                            outputLine = reader.readLine();
 
                 if (outputLine == null) {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-            } while (!outputLine.matches(REDIS_READY_PATTERN));
+            } while (!outputLine.matches(pattern));
 		} finally {
 			reader.close();
 		}
