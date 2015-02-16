@@ -125,3 +125,22 @@ Contributors
  * anthonyu ([@anthonyu](http://github.com/anthonyu))
  * Artem Orobets ([@enisher](http://github.com/enisher))
  * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
+
+
+Changelog
+==============
+
+### 0.4 (upcoming)
+ * Updated for Java 8
+ * Added Sentinel support
+ * Ability to create arbitrary clusters on arbitrary (ephemeral) ports
+ * Updated to latest guava 
+ * Throw an exception if redis has not been started
+ * OS detection fix (not ready)
+ * redis binary per OS/arch pair (not ready)
+
+### 0.3
+ * Fluent API for RedisServer creation
+
+### 0.2
+ * Initial decent release
