@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by piotrturek on 22/01/15.
- */
 public class RedisCluster implements Redis {
     private final List<Redis> sentinels = new LinkedList<>();
     private final List<Redis> servers = new LinkedList<>();

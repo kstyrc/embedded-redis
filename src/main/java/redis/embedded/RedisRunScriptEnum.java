@@ -1,8 +1,5 @@
 package redis.embedded;
 
-/**
-* Created by piotrturek on 22/01/15.
-*/
 enum RedisRunScriptEnum {
     WINDOWS_32("redis-server.exe"),
     WINDOWS_64("redis-server-64.exe"),

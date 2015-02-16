@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by piotrturek on 01/02/15.
- */
 public class JedisUtil {
     public static Set<String> jedisHosts(Redis redis) {
         final List<Integer> ports = redis.ports();
