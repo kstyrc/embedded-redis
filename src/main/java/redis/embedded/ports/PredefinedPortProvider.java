@@ -8,9 +8,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-/**
- * Created by piotrturek on 29/01/15.
- */
 public class PredefinedPortProvider implements PortProvider {
     private final List<Integer> ports = new LinkedList<>();
     private final Iterator<Integer> current;

@@ -116,3 +116,12 @@ When not provided with the desired redis executable, RedisServer runs os-depende
 - unofficial Win32/64 port from https://github.com/MSOpenTech/redis (branch 2.6) in case of Windows
 
 However, you should provide RedisServer with redis executable if you need specific version.
+
+
+Contributors
+==============
+ * Krzysztof Styrc ([@kstyrc](http://github.com/kstyrc))
+ * Piotr Turek ([@turu](http://github.com/turu))
+ * anthonyu ([@anthonyu](http://github.com/anthonyu))
+ * Artem Orobets ([@enisher](http://github.com/enisher))
+ * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))

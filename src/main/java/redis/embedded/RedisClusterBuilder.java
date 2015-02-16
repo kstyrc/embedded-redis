@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Created by piotrturek on 22/01/15.
- */
 public class RedisClusterBuilder {
     private RedisSentinelBuilder sentinelBuilder = new RedisSentinelBuilder();
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();

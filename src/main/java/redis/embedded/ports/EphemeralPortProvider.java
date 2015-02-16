@@ -6,9 +6,6 @@ import redis.embedded.exceptions.RedisBuildingException;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-/**
- * Created by piotrturek on 29/01/15.
- */
 public class EphemeralPortProvider implements PortProvider {
     @Override
     public int next() {
