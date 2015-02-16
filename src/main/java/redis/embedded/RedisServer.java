@@ -3,6 +3,7 @@ package redis.embedded;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import redis.embedded.util.JarUtil;
+import redis.embedded.util.OSDetector;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,11 +30,14 @@ public class RedisServer {
 		}
 
 		public static String getRedisRunScript() {
-			String osName = System.getProperty("os.name").toLowerCase();
-			String osArch = System.getProperty("os.arch").toLowerCase();
+            OSDetector.OS os = OSDetector.getOS();
+            OSDetector.Architecture arch = OSDetector.getArchitecture();
 
-			if (osName.contains("win")) {
-				if (osArch.contains("64")) {
+            switch (os) {
+                case
+            }
+			if (os == OSDetector.OS.WINDOWS) {
+				if (arch == OSDetector.Architecture.x86_64) {
 					return WINDOWS_64.runScript;
 				} else {
 					return WINDOWS_32.runScript;
