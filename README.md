@@ -120,8 +120,8 @@ However, you should provide RedisServer with redis executable if you need specif
 
 Contributors
 ==============
-Krzysztof Styrc ([@kstyrc](http://github.com/kstyrc))
-Piotr Turek ([@turu](http://github.com/turu))
-anthonyu ([@anthonyu](http://github.com/anthonyu))
-Artem Orobets ([@enisher](http://github.com/enisher))
-Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
+ * Krzysztof Styrc ([@kstyrc](http://github.com/kstyrc))
+ * Piotr Turek ([@turu](http://github.com/turu))
+ * anthonyu ([@anthonyu](http://github.com/anthonyu))
+ * Artem Orobets ([@enisher](http://github.com/enisher))
+ * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
