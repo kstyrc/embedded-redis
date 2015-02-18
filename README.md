@@ -118,6 +118,11 @@ When not provided with the desired redis executable, RedisServer runs os-depende
 However, you should provide RedisServer with redis executable if you need specific version.
 
 
+License
+==============
+Licensed under the Apache License, Version 2.0
+
+
 Contributors
 ==============
  * Krzysztof Styrc ([@kstyrc](http://github.com/kstyrc))
