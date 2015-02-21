@@ -37,7 +37,7 @@ abstract class AbstractRedisInstance implements Redis {
             awaitRedisServerReady();
             active = true;
         } catch (IOException e) {
-            throw new EmbeddedRedisException("Failed to start Reddis instance", e);
+            throw new EmbeddedRedisException("Failed to start Redis instance", e);
         }
     }
 

@@ -135,14 +135,17 @@ Contributors
 Changelog
 ==============
 
-### 0.4 (upcoming)
+### 0.5
+ * OS detection fix (not ready)
+ * redis binary per OS/arch pair (not ready)
+
+### 0.4 
  * Updated for Java 8
  * Added Sentinel support
  * Ability to create arbitrary clusters on arbitrary (ephemeral) ports
  * Updated to latest guava 
  * Throw an exception if redis has not been started
- * OS detection fix (not ready)
- * redis binary per OS/arch pair (not ready)
+ * Redis errorStream logged to System.out
 
 ### 0.3
  * Fluent API for RedisServer creation
