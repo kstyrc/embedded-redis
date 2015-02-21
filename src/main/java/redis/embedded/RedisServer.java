@@ -1,7 +1,5 @@
 package redis.embedded;
 
-import redis.embedded.util.JarUtil;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,7 +16,7 @@ public class RedisServer extends AbstractRedisInstance {
 
     public RedisServer(Integer port) throws IOException {
         super(port);
-        File executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+        File executable = RedisExecProvider.defaultProvider().get();
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
                 "--port", Integer.toString(port)
@@ -29,6 +27,14 @@ public class RedisServer extends AbstractRedisInstance {
         super(port);
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
+                "--port", Integer.toString(port)
+        );
+    }
+
+    public RedisServer(RedisExecProvider redisExecProvider, Integer port) throws IOException {
+        super(port);
+        this.args = Arrays.asList(
+                redisExecProvider.get().getAbsolutePath(),
                 "--port", Integer.toString(port)
         );
     }

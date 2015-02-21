@@ -3,7 +3,6 @@ package redis.embedded;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
 import redis.embedded.exceptions.RedisBuildingException;
-import redis.embedded.util.JarUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +20,7 @@ public class RedisSentinelBuilder {
     private static final String PORT_LINE = "port %d";
 
     private File executable;
+    private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
     private Integer port = 26379;
     private int masterPort = 6379;
     private String masterName = "mymaster";
@@ -32,13 +32,8 @@ public class RedisSentinelBuilder {
 
     private StringBuilder redisConfigBuilder;
 
-    public RedisSentinelBuilder executable(File executable) {
-        this.executable = executable;
-        return this;
-    }
-
-    public RedisSentinelBuilder executable(String executable) {
-        this.executable = new File(executable);
+    public RedisSentinelBuilder redisExecProvider(RedisExecProvider redisExecProvider) {
+        this.redisExecProvider = redisExecProvider;
         return this;
     }
 
@@ -110,10 +105,8 @@ public class RedisSentinelBuilder {
             if (sentinelConf == null) {
                 resolveSentinelConf();
             }
-            if (executable == null) {
-                executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
-            }
-        } catch (IOException e) {
+            executable = redisExecProvider.get();
+        } catch (Exception e) {
             throw new RedisBuildingException("Could not build sentinel instance", e);
         }
     }

@@ -14,15 +14,26 @@ redisServer.start();
 redisServer.stop();
 ```
 
-You can also provide RedisServer with your own redis executable to run:
+You can also provide RedisServer with your own executable:
 ```java
+// 1) given explicit file (os-independence broken!)
 RedisServer redisServer = new RedisServer("/path/to/your/redis", 6379);
+
+// 2) given os-independent matrix
+RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
+  .override(OS.UNIX, "/path/to/unix/redis")
+  .override(OS.WINDOWS, Architecture.x86, "/path/to/windows/redis")
+  .override(OS.Windows, Architecture.x86_64, "/path/to/windows/redis")
+  .override(OS.MAC_OS_X, Architecture.x86, "/path/to/macosx/redis")
+  .override(OS.MAC_OS_X, Architecture.x86_64, "/path/to/macosx/redis")
+  
+RedisServer redisServer = new RedisServer(customProvider, 6379);
 ```
 
 You can also use fluent API to create RedisServer:
 ```java
 RedisServer redisServer = RedisServer.builder()
-  .executable("/path/to/your/redis")
+  .redisExecProvider(customRedisProvider)
   .port(6379)
   .slaveOf("locahost", 6378)
   .configFile("/path/to/your/redis.conf")
@@ -32,7 +43,7 @@ RedisServer redisServer = RedisServer.builder()
 Or even create simple redis.conf file from scratch:
 ```java
 RedisServer redisServer = RedisServer.builder()
-  .executable("/path/to/your/redis")
+  .redisExecProvider(customRedisProvider)
   .port(6379)
   .slaveOf("locahost", 6378)
   .setting("daemonize no")
@@ -135,9 +146,9 @@ Contributors
 Changelog
 ==============
 
-### 0.5
- * OS detection fix (not ready)
- * redis binary per OS/arch pair (not ready)
+### 0.5 
+ * OS detection fix
+ * redis binary per OS/arch pair
 
 ### 0.4 
  * Updated for Java 8

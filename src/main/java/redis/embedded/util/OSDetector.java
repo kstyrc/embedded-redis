@@ -1,20 +1,11 @@
 package redis.embedded.util;
 
+import redis.embedded.exceptions.OsDetectionException;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 public class OSDetector {
-
-    public static enum OS {
-        WINDOWS,
-        UNIX,
-        MACOSX
-    }
-
-    public static enum Architecture {
-        x86,
-        x86_64
-    }
 
     public static OS getOS() {
         String osName = System.getProperty("os.name").toLowerCase();
@@ -24,23 +15,23 @@ public class OSDetector {
         } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
             return OS.UNIX;
         } else if ("Mac OS X".equalsIgnoreCase(osName)) {
-            return OS.MACOSX;
+            return OS.MAC_OS_X;
         } else {
-            throw new RuntimeException("Unrecognized OS: " + osName);
+            throw new OsDetectionException("Unrecognized OS: " + osName);
         }
     }
 
     public static Architecture getArchitecture() {
-        OS os;
-        switch (os = getOS()) {
+        OS os = getOS();
+        switch (os) {
             case WINDOWS:
                 return getWindowsArchitecture();
             case UNIX:
                 return getUnixArchitecture();
-            case MACOSX:
+            case MAC_OS_X:
                 return getMacOSXArchitecture();
             default:
-                throw new RuntimeException("Unsupported OS: " + os);
+                throw new OsDetectionException("Unrecognized OS: " + os);
         }
     }
 
@@ -69,7 +60,7 @@ public class OSDetector {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new OsDetectionException(e);
         } finally {
             try {
                 if (input != null) {
@@ -97,7 +88,7 @@ public class OSDetector {
                 }
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new OsDetectionException(e);
         } finally {
             try {
                 if (input != null) {
