@@ -7,7 +7,7 @@ Maven dependency
 ==============
 
 Currently embedded-redis is available in clojars repository:
-```
+```xml
 <repository>
   <id>clojars.org</id>
   <url>http://clojars.org/repo</url>
@@ -15,7 +15,7 @@ Currently embedded-redis is available in clojars repository:
 ```
 
 Dependency configuration:
-```
+```xml
 <dependency>
   <groupId>redis.embedded</groupId>
   <artifactId>embedded-redis</artifactId>
