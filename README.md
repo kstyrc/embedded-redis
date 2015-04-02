@@ -144,7 +144,7 @@ Redis version
 When not provided with the desired redis executable, RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
 - Redis 2.8.19 in case of Linux/Unix
 - Redis 2.8.19 in case of OSX
-- unofficial Win32/64 port from https://github.com/MSOpenTech/redis (branch 2.6) in case of Windows
+- Redis 2.8.19 in case of Windows: https://github.com/MSOpenTech/redis/releases/tag/win-2.8.19
 
 However, you should provide RedisServer with redis executable if you need specific version.
 
@@ -169,6 +169,7 @@ Changelog
 ### 0.5 
  * OS detection fix
  * redis binary per OS/arch pair
+ * Updated to 2.8.19 binary for Windows
 
 ### 0.4 
  * Updated for Java 8
