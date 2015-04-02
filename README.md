@@ -19,7 +19,7 @@ Dependency configuration:
 <dependency>
   <groupId>redis.embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.3</version>
+  <version>0.5</version>
 </dependency>
 ```
 
