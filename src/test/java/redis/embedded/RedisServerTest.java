@@ -1,8 +1,12 @@
 package redis.embedded;
 
+import com.google.common.io.Resources;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.embedded.exceptions.RedisBuildingException;
+import redis.embedded.util.Architecture;
+import redis.embedded.util.OS;
 
 import static org.junit.Assert.*;
 
@@ -84,5 +88,31 @@ public class RedisServerTest {
         redisServer.start();
         redisServer.stop();
         assertFalse(redisServer.isActive());
+    }
+
+    @Test
+    public void shouldOverrideDefaultExecutable() throws Exception {
+        RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
+                .override(OS.UNIX, Resources.getResource("redis-server").getFile())
+                .override(OS.WINDOWS, Architecture.x86, Resources.getResource("redis-server.exe").getFile())
+                .override(OS.WINDOWS, Architecture.x86_64, Resources.getResource("redis-server-64.exe").getFile())
+                .override(OS.MAC_OS_X, Resources.getResource("redis-server").getFile());
+        
+        redisServer = new RedisServerBuilder()
+                .redisExecProvider(customProvider)
+                .build();
+    }
+
+    @Test(expected = RedisBuildingException.class)
+    public void shouldFailWhenBadExecutableGiven() throws Exception {
+        RedisExecProvider buggyProvider = RedisExecProvider.defaultProvider()
+                .override(OS.UNIX, "some")
+                .override(OS.WINDOWS, Architecture.x86, "some")
+                .override(OS.WINDOWS, Architecture.x86_64, "some")
+                .override(OS.MAC_OS_X, "some");
+        
+        redisServer = new RedisServerBuilder()
+                .redisExecProvider(buggyProvider)
+                .build();
     }
 }

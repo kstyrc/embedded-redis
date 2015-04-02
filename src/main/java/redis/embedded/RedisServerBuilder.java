@@ -3,7 +3,6 @@ package redis.embedded;
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
 import redis.embedded.exceptions.RedisBuildingException;
-import redis.embedded.util.JarUtil;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,22 +16,18 @@ public class RedisServerBuilder {
     private static final String CONF_FILENAME = "embedded-redis-server";
 
     private File executable;
+    private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
     private Integer port = 6379;
     private InetSocketAddress slaveOf;
     private String redisConf;
 
     private StringBuilder redisConfigBuilder;
 
-    public RedisServerBuilder executable(File executable) {
-        this.executable = executable;
+    public RedisServerBuilder redisExecProvider(RedisExecProvider redisExecProvider) {
+        this.redisExecProvider = redisExecProvider;
         return this;
     }
-
-    public RedisServerBuilder executable(String executable) {
-        this.executable = new File(executable);
-        return this;
-    }
-
+    
     public RedisServerBuilder port(Integer port) {
         this.port = port;
         return this;
@@ -77,6 +72,7 @@ public class RedisServerBuilder {
     }
 
     public void reset() {
+        this.executable = null;
         this.redisConfigBuilder = null;
         this.slaveOf = null;
         this.redisConf = null;
@@ -98,8 +94,10 @@ public class RedisServerBuilder {
             redisConf = redisConfigFile.getAbsolutePath();
         }
 
-        if (executable == null) {
-            executable = JarUtil.extractExecutableFromJar(RedisRunScriptEnum.getRedisRunScript());
+        try {
+            executable = redisExecProvider.get();
+        } catch (Exception e) {
+            throw new RedisBuildingException("Failed to resolve executable", e);
         }
     }
 
