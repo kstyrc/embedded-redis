@@ -15,6 +15,8 @@ install:
   - cmd: SET PATH=C:\maven\apache-maven-3.2.5\bin;%JAVA_HOME%\bin;%PATH%
   - cmd: SET MAVEN_OPTS=-XX:MaxPermSize=2g -Xmx4g
   - cmd: SET JAVA_OPTS=-XX:MaxPermSize=2g -Xmx4g
+  - cmd: mvn --version
+  - cmd: java -version
 build_script:
   - mvn clean package -B -Dmaven.test.skip=true
 test_script:
