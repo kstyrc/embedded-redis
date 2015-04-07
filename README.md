@@ -1,5 +1,6 @@
 embedded-redis
 ==============
+[![Build Status](https://ci.appveyor.com/api/projects/status/github/kstyrc/embedded-redis?branch=master&svg=true)](https://ci.appveyor.com/project/kstyrc/embedded-redis)
 
 Redis embedded server for Java integration testing
 
