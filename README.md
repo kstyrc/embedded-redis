@@ -165,12 +165,16 @@ Contributors
  * anthonyu ([@anthonyu](http://github.com/anthonyu))
  * Artem Orobets ([@enisher](http://github.com/enisher))
  * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
+ * Rob Winch ([@rwinch](http://github.com/rwinch))
 
 
 Changelog
 ==============
 
-### 0.5 
+### 0.6
+ * Support JDK 6 +
+
+### 0.5
  * OS detection fix
  * redis binary per OS/arch pair
  * Updated to 2.8.19 binary for Windows

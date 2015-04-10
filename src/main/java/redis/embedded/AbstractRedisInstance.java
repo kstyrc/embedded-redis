@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.io.IOUtils;
+
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
@@ -43,21 +45,14 @@ abstract class AbstractRedisInstance implements Redis {
 
     private void logErrors() {
         final InputStream errorStream = redisProcess.getErrorStream();
-        executor.submit(() -> {
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
+        BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
+        Runnable printReaderTask = new PrintReaderRunnable(reader);
+        executor.submit(printReaderTask);
     }
 
     private void awaitRedisServerReady() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()))) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
+        try {
             String outputLine;
             do {
                 outputLine = reader.readLine();
@@ -66,6 +61,8 @@ abstract class AbstractRedisInstance implements Redis {
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
             } while (!outputLine.matches(redisReadyPattern()));
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
     }
 
@@ -98,5 +95,32 @@ abstract class AbstractRedisInstance implements Redis {
     @Override
     public List<Integer> ports() {
         return Arrays.asList(port);
+    }
+
+    private static class PrintReaderRunnable implements Runnable {
+        private final BufferedReader reader;
+
+        private PrintReaderRunnable(BufferedReader reader) {
+            this.reader = reader;
+        }
+
+        public void run() {
+            try {
+                readLines();
+            } finally {
+                IOUtils.closeQuietly(reader);
+            }
+        }
+
+        public void readLines() {
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

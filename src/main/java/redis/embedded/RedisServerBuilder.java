@@ -106,7 +106,7 @@ public class RedisServerBuilder {
     }
 
     private List<String> buildCommandArgs() {
-        List<String> args = new ArrayList<>();
+        List<String> args = new ArrayList<String>();
         args.add(executable.getAbsolutePath());
 
         if (!Strings.isNullOrEmpty(redisConf)) {
