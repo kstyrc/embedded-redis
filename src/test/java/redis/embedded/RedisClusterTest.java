@@ -44,8 +44,12 @@ public class RedisClusterTest {
         instance.stop();
 
         //then
-        sentinels.stream().forEach(s -> verify(s).stop());
-        servers.stream().forEach(m -> verify(m).stop());
+        for(Redis s : sentinels) {
+            verify(s).stop();
+        }
+        for(Redis s : servers) {
+            verify(s).stop();
+        }
     }
 
     @Test
@@ -59,8 +63,12 @@ public class RedisClusterTest {
         instance.start();
 
         //then
-        sentinels.stream().forEach(s -> verify(s).start());
-        servers.stream().forEach(m -> verify(m).start());
+        for(Redis s : sentinels) {
+            verify(s).start();
+        }
+        for(Redis s : servers) {
+            verify(s).start();
+        }
     }
 
     @Test
@@ -78,8 +86,12 @@ public class RedisClusterTest {
         instance.isActive();
 
         //then
-        sentinels.stream().forEach(s -> verify(s).isActive());
-        servers.stream().forEach(m -> verify(m).isActive());
+        for(Redis s : sentinels) {
+            verify(s).isActive();
+        }
+        for(Redis s : servers) {
+            verify(s).isActive();
+        }
     }
 
     @Test

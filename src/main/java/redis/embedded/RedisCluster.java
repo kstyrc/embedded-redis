@@ -3,14 +3,13 @@ package redis.embedded;
 import com.google.common.collect.Lists;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RedisCluster implements Redis {
-    private final List<Redis> sentinels = new LinkedList<>();
-    private final List<Redis> servers = new LinkedList<>();
+    private final List<Redis> sentinels = new LinkedList<Redis>();
+    private final List<Redis> servers = new LinkedList<Redis>();
 
     RedisCluster(List<Redis> sentinels, List<Redis> servers) {
         this.servers.addAll(servers);
@@ -19,27 +18,45 @@ public class RedisCluster implements Redis {
 
     @Override
     public boolean isActive() {
-        return sentinels.stream().allMatch(Redis::isActive) && servers.stream().allMatch(Redis::isActive);
+        for(Redis redis : sentinels) {
+            if(!redis.isActive()) {
+                return false;
+            }
+        }
+        for(Redis redis : servers) {
+            if(!redis.isActive()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public void start() throws EmbeddedRedisException {
-        sentinels.parallelStream().forEach(Redis::start);
-        servers.parallelStream().forEach(Redis::start);
+        for(Redis redis : sentinels) {
+            redis.start();
+        }
+        for(Redis redis : servers) {
+            redis.start();
+        }
     }
 
     @Override
     public void stop() throws EmbeddedRedisException {
-        servers.parallelStream().forEach(Redis::stop);
-        sentinels.parallelStream().forEach(Redis::stop);
+        for(Redis redis : sentinels) {
+            redis.stop();
+        }
+        for(Redis redis : servers) {
+            redis.stop();
+        }
     }
 
     @Override
     public List<Integer> ports() {
-        return Stream.concat(
-                sentinels.stream().flatMap(s -> s.ports().stream()),
-                servers.stream().flatMap(s -> s.ports().stream())
-        ).collect(Collectors.toList());
+        List<Integer> ports = new ArrayList<Integer>();
+        ports.addAll(sentinelPorts());
+        ports.addAll(serverPorts());
+        return ports;
     }
 
     public List<Redis> sentinels() {
@@ -47,7 +64,11 @@ public class RedisCluster implements Redis {
     }
 
     public List<Integer> sentinelPorts() {
-        return sentinels.stream().flatMap(s -> s.ports().stream()).collect(Collectors.toList());
+        List<Integer> ports = new ArrayList<Integer>();
+        for(Redis redis : sentinels) {
+            ports.addAll(redis.ports());
+        }
+        return ports;
     }
 
     public List<Redis> servers() {
@@ -55,7 +76,11 @@ public class RedisCluster implements Redis {
     }
 
     public List<Integer> serverPorts() {
-        return servers.stream().flatMap(s -> s.ports().stream()).collect(Collectors.toList());
+        List<Integer> ports = new ArrayList<Integer>();
+        for(Redis redis : servers) {
+            ports.addAll(redis.ports());
+        }
+        return ports;
     }
 
     public static RedisClusterBuilder builder() {

@@ -3,9 +3,9 @@ package redis.embedded.util;
 import redis.embedded.Redis;
 import redis.embedded.RedisCluster;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JedisUtil {
     public static Set<String> jedisHosts(Redis redis) {
@@ -19,6 +19,10 @@ public class JedisUtil {
     }
 
     public static Set<String> portsToJedisHosts(List<Integer> ports) {
-        return ports.stream().map(p -> "localhost:" + p).collect(Collectors.toSet());
+        Set<String> hosts = new HashSet<String>();
+        for(Integer p : ports) {
+            hosts.add("localhost:" + p);
+        }
+        return hosts;
     }
 }

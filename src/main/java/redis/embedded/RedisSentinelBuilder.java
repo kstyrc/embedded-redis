@@ -143,7 +143,7 @@ public class RedisSentinelBuilder {
     private List<String> buildCommandArgs() {
         Preconditions.checkNotNull(sentinelConf);
 
-        List<String> args = new ArrayList<>();
+        List<String> args = new ArrayList<String>();
         args.add(executable.getAbsolutePath());
         args.add(sentinelConf);
         args.add("--sentinel");
