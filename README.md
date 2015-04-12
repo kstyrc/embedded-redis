@@ -10,16 +10,24 @@ Redis embedded server for Java integration testing
 Maven dependency
 ==============
 
-Currently embedded-redis is available in clojars repository:
+Maven Central:
+```xml
+<dependency>
+  <groupId>redis.embedded</groupId>
+  <artifactId>embedded-redis</artifactId>
+  <version>0.6</version>
+</dependency>
+```
+
+Previous releases (before 0.6):
 ```xml
 <repository>
   <id>clojars.org</id>
   <url>http://clojars.org/repo</url>
 </repository>
-```
 
-Dependency configuration:
-```xml
+...
+
 <dependency>
   <groupId>redis.embedded</groupId>
   <artifactId>embedded-redis</artifactId>
