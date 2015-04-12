@@ -17,7 +17,7 @@ abstract class AbstractRedisInstance implements Redis {
 	private Process redisProcess;
     private final int port;
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
     protected AbstractRedisInstance(int port) {
         this.port = port;
@@ -35,8 +35,8 @@ abstract class AbstractRedisInstance implements Redis {
         }
         try {
             redisProcess = createRedisProcessBuilder().start();
-            logErrors();
             awaitRedisServerReady();
+            logErrors();
             active = true;
         } catch (IOException e) {
             throw new EmbeddedRedisException("Failed to start Redis instance", e);
@@ -45,9 +45,12 @@ abstract class AbstractRedisInstance implements Redis {
 
     private void logErrors() {
         final InputStream errorStream = redisProcess.getErrorStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
-        Runnable printReaderTask = new PrintReaderRunnable(reader);
-        executor.submit(printReaderTask);
+        Runnable errorStreamGobbler = new StreamGobbler(errorStream, System.err, "");
+        executor.submit(errorStreamGobbler);
+        
+        final InputStream inputStream = redisProcess.getInputStream();
+        Runnable inputStreamGobbler = new StreamGobbler(inputStream, System.err, "");
+        executor.submit(inputStreamGobbler);
     }
 
     private void awaitRedisServerReady() throws IOException {
@@ -60,9 +63,10 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
+                System.out.println(outputLine);
             } while (!outputLine.matches(redisReadyPattern()));
         } finally {
-            IOUtils.closeQuietly(reader);
+            // IOUtils.closeQuietly(reader);
         }
     }
 
@@ -78,6 +82,9 @@ abstract class AbstractRedisInstance implements Redis {
     @Override
     public synchronized void stop() throws EmbeddedRedisException {
         if (active) {
+            IOUtils.closeQuietly(redisProcess.getInputStream());
+            IOUtils.closeQuietly(redisProcess.getOutputStream());
+            IOUtils.closeQuietly(redisProcess.getErrorStream());
             redisProcess.destroy();
             tryWaitFor();
             active = false;
@@ -97,29 +104,29 @@ abstract class AbstractRedisInstance implements Redis {
         return Arrays.asList(port);
     }
 
-    private static class PrintReaderRunnable implements Runnable {
-        private final BufferedReader reader;
+    private static class StreamGobbler implements Runnable {
 
-        private PrintReaderRunnable(BufferedReader reader) {
-            this.reader = reader;
+        private final InputStream is;
+        private final PrintStream os;
+        private final String prefix;
+
+        private StreamGobbler(InputStream is, PrintStream os, String prefix) {
+            this.is = is;
+            this.os = os;
+            this.prefix = prefix;
         }
 
+        @Override
         public void run() {
             try {
-                readLines();
-            } finally {
-                IOUtils.closeQuietly(reader);
-            }
-        }
-
-        public void readLines() {
-            try {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader br = new BufferedReader(isr);
+                String line=null;
+                while ( (line = br.readLine()) != null) {
+                    os.println(prefix + line);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
             }
         }
     }
