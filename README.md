@@ -13,7 +13,7 @@ Maven dependency
 Maven Central:
 ```xml
 <dependency>
-  <groupId>redis.embedded</groupId>
+  <groupId>com.github.kstyrc</groupId>
   <artifactId>embedded-redis</artifactId>
   <version>0.6</version>
 </dependency>
