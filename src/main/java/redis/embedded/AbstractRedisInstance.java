@@ -81,6 +81,9 @@ abstract class AbstractRedisInstance implements Redis {
     @Override
     public synchronized void stop() throws EmbeddedRedisException {
         if (active) {
+            IOUtils.closeQuietly(redisProcess.getInputStream());
+            IOUtils.closeQuietly(redisProcess.getOutputStream());
+            IOUtils.closeQuietly(redisProcess.getErrorStream());
             redisProcess.destroy();
             continueReading.set(false);
             tryWaitFor();
