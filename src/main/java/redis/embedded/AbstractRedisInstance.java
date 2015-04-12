@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.io.IOUtils;
 
@@ -18,6 +19,7 @@ abstract class AbstractRedisInstance implements Redis {
     private final int port;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final AtomicBoolean continueReading = new AtomicBoolean(false);
 
     protected AbstractRedisInstance(int port) {
         this.port = port;
@@ -46,7 +48,8 @@ abstract class AbstractRedisInstance implements Redis {
     private void logErrors() {
         final InputStream errorStream = redisProcess.getErrorStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
-        Runnable printReaderTask = new PrintReaderRunnable(reader);
+        continueReading.set(true);
+        Runnable printReaderTask = new PrintReaderRunnable(continueReading, reader);
         executor.submit(printReaderTask);
     }
 
@@ -79,6 +82,7 @@ abstract class AbstractRedisInstance implements Redis {
     public synchronized void stop() throws EmbeddedRedisException {
         if (active) {
             redisProcess.destroy();
+            continueReading.set(false);
             tryWaitFor();
             active = false;
         }
@@ -98,9 +102,11 @@ abstract class AbstractRedisInstance implements Redis {
     }
 
     private static class PrintReaderRunnable implements Runnable {
+        private AtomicBoolean continueReading;
         private final BufferedReader reader;
 
-        private PrintReaderRunnable(BufferedReader reader) {
+        private PrintReaderRunnable(AtomicBoolean continueReading, BufferedReader reader) {
+            this.continueReading = continueReading;
             this.reader = reader;
         }
 
@@ -115,7 +121,7 @@ abstract class AbstractRedisInstance implements Redis {
         public void readLines() {
             try {
                 String line;
-                while ((line = reader.readLine()) != null) {
+                while (continueReading.get() && (line = reader.readLine()) != null) {
                     System.out.println(line);
                 }
             } catch (IOException e) {
