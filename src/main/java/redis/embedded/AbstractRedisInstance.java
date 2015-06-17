@@ -17,7 +17,7 @@ abstract class AbstractRedisInstance implements Redis {
 	private Process redisProcess;
     private final int port;
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ExecutorService executor;
 
     protected AbstractRedisInstance(int port) {
         this.port = port;
@@ -47,6 +47,7 @@ abstract class AbstractRedisInstance implements Redis {
         final InputStream errorStream = redisProcess.getErrorStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(errorStream));
         Runnable printReaderTask = new PrintReaderRunnable(reader);
+        executor = Executors.newSingleThreadExecutor();
         executor.submit(printReaderTask);
     }
 
@@ -78,6 +79,9 @@ abstract class AbstractRedisInstance implements Redis {
     @Override
     public synchronized void stop() throws EmbeddedRedisException {
         if (active) {
+            if (executor != null && !executor.isShutdown()) {
+                executor.shutdown();
+            }
             redisProcess.destroy();
             tryWaitFor();
             active = false;
