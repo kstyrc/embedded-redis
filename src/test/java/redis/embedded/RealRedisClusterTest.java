@@ -64,7 +64,7 @@ public class RealRedisClusterTest {
     }
 
     @Test
-    public void numberOfNodeShouldBeMoreThanOne() throws Exception {
+    public void numberOfNodeShouldBeMoreThanThree() throws Exception {
         //given
         final List<Redis> oneServer = Arrays.asList(master1);
         //when
@@ -85,10 +85,32 @@ public class RealRedisClusterTest {
     }
 
     @Test
+    public void numberOfReplicatesShouldBeMoreThatOne() throws Exception {
+        final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
+        try {
+            instance = new RealRedisCluster(threeServers, 0);
+            fail();
+        } catch (EmbeddedRedisException e) {
+            assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 1 replication."));
+        }
+    }
+
+    @Test
+    public void numberOfReplicatesShouldBeLessThanNumberOfServers() throws Exception {
+        final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
+        try {
+            instance = new RealRedisCluster(threeServers, 10);
+            fail();
+        } catch (EmbeddedRedisException e) {
+            assertThat(e.getMessage(), equalTo("Redis Cluster requires number of replications less than number of nodes - 1."));
+        }
+    }
+    @Test
     public void isActiveShouldCheckEntireClusterIfAllActive() throws Exception {
         //given
         given(master1.isActive()).willReturn(true);
         given(master2.isActive()).willReturn(true);
+        given(master3.isActive()).willReturn(true);
         final List<Redis> servers = Arrays.asList(master1, master2, master3);
         instance = new RealRedisCluster(servers);
 
@@ -107,7 +129,7 @@ public class RealRedisClusterTest {
     @Test
     public void createShouldStartEntireCluster() throws Exception {
         //given
-        Collection<Integer> ports = Arrays.asList(3000, 3001, 3002);
+        Collection<Integer> ports = Arrays.asList(3000, 3001, 3002, 3003);
 
         RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
         redisExecProvider.override(OS.UNIX, "redis-server-3.0.0");

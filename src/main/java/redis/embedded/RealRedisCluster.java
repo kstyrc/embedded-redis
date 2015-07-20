@@ -9,17 +9,35 @@ import java.util.*;
  * Created by dragan on 17.07.15.
  */
 public class RealRedisCluster implements Cluster {
-    private final List<Redis> servers = new LinkedList<Redis>();
     private static final int CLUSTER_HASH_SLOTS_NUMBER = 16384;
+    private static final String LOCAL_HOST = "127.0.0.1";
 
-    RealRedisCluster(List<Redis> servers) {
-        if (servers.size() > 2) {
-            this.servers.addAll(servers);
-        } else {
-            throw new EmbeddedRedisException("Redis Cluster requires at least 3 master nodes.");
-        }
+    private final List<Redis> servers = new LinkedList<Redis>();
+    private final int numOfReplicates;
+
+    RealRedisCluster(List<Redis> servers, int numOfReplicates) {
+        validateParams(servers, numOfReplicates);
+        this.servers.addAll(servers);
+        this.numOfReplicates = numOfReplicates;
     }
 
+    RealRedisCluster(List<Redis> servers) {
+        validateParams(servers, 1);
+        this.servers.addAll(servers);
+        this.numOfReplicates = 1;
+    }
+
+    private void validateParams(List<Redis> servers, int numOfReplicates) {
+        if (servers.size() <= 2) {
+            throw new EmbeddedRedisException("Redis Cluster requires at least 3 master nodes.");
+        }
+        if (numOfReplicates < 1) {
+            throw new EmbeddedRedisException("Redis Cluster requires at least 1 replication.");
+        }
+        if (numOfReplicates > servers.size() - 1) {
+            throw new EmbeddedRedisException("Redis Cluster requires number of replications less than number of nodes - 1.");
+        }
+    }
 
     @Override
     public void create() throws EmbeddedRedisException {
@@ -30,15 +48,17 @@ public class RealRedisCluster implements Cluster {
 
     @Override
     public void start() throws EmbeddedRedisException {
-        allocSlots();
+        List<MasterNode> masters = allocSlots();
         joinCluster();
-
-        System.out.println("Waiting for the cluster to join");
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new EmbeddedRedisException(e.getMessage(), e);
+        System.out.println("Waiting for the cluster to join...");
+        while (!clusterState().equals(ClusterState.OK)) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new EmbeddedRedisException(e.getMessage(), e);
+            }
         }
+        setReplicates(masters);
     }
 
     @Override
@@ -58,18 +78,32 @@ public class RealRedisCluster implements Cluster {
         }
     }
 
+    private ClusterState clusterState() {
+        Redis redis = servers.get(0);
+        Jedis jedis = null;
+        try {
+            jedis = new Jedis(LOCAL_HOST, redis.ports().get(0));
+            String ack = jedis.clusterInfo();
+            return ClusterState.getStateByStr(ack.split("\r\n")[0].split(":")[1]);
+        } finally {
+            if (jedis != null) {
+                jedis.close();
+            }
+        }
+    }
+
     private void joinCluster() {
         Jedis jedis = null;
 
         //connect sequentially nodes
         for (int i = 0; i < servers.size() - 1; i++) {
             try {
-                jedis = new Jedis("127.0.0.1", servers.get(i).ports().get(0));
-                String ack = jedis.clusterMeet("127.0.0.1", servers.get(i + 1).ports().get(0));
+                jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
+                jedis.clusterMeet(LOCAL_HOST, servers.get(i + 1).ports().get(0));
                 if (i == servers.size() - 2) {
-                    // connect N node to 1 node
-                    jedis = new Jedis("127.0.0.1", servers.get(servers.size() - 1).ports().get(0));
-                    ack = jedis.clusterMeet("127.0.0.1", servers.get(0).ports().get(0));
+                    // connect N-node to first-node
+                    jedis = new Jedis(LOCAL_HOST, servers.get(servers.size() - 1).ports().get(0));
+                    jedis.clusterMeet(LOCAL_HOST, servers.get(0).ports().get(0));
                 }
             } finally {
                 if (jedis != null) {
@@ -79,14 +113,11 @@ public class RealRedisCluster implements Cluster {
         }
     }
 
-    private void allocSlots() {
+    private List<MasterNode> allocSlots() {
         int nodesCount = servers.size();
-        //TODO
-        // num replics
-        int numReplicas = 1;
-        int mastersCount = nodesCount / (numReplicas + 1);
+        int mastersCount = nodesCount / (numOfReplicates + 1);
 
-        List<Node> masters = new ArrayList<Node>(mastersCount);
+        List<MasterNode> masters = new ArrayList<MasterNode>(mastersCount);
 
         // alloc slots on masters
         int slotPerNode = CLUSTER_HASH_SLOTS_NUMBER / mastersCount;
@@ -102,8 +133,7 @@ public class RealRedisCluster implements Cluster {
             if (last < first)
                 last = first;
 
-            masters.add(new Node(servers.get(i), new RealRedisCluster.SlotRange(first, last)));
-
+            masters.add(new MasterNode(servers.get(i), new RealRedisCluster.SlotRange(first, last)));
             first = last + 1;
             cursor += slotPerNode;
         }
@@ -121,10 +151,44 @@ public class RealRedisCluster implements Cluster {
 
         Jedis jedis = null;
 
-        for (Node master : masters) {
+        for (MasterNode master : masters) {
             try {
-                jedis = new Jedis("127.0.0.1", master.getMaster().ports().get(0));
+                //add slots
+                jedis = new Jedis(LOCAL_HOST, master.getMaster().ports().get(0));
                 jedis.clusterAddSlots(master.getSlotRange().getRange());
+                //get node id
+                String curNodeId = getNodeIdFromClusterNodesAck(jedis.clusterNodes());
+                System.out.println(String.format("Master node: %s with slots[%d,%d]",
+                        curNodeId,
+                        master.getSlotRange().first,
+                        master.getSlotRange().last));
+                master.setNodeId(curNodeId);
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
+                }
+            }
+        }
+        return masters;
+    }
+
+    private String getNodeIdFromClusterNodesAck(String ack) {
+        return ack.split(" :")[0];
+    }
+
+    private void setReplicates(List<MasterNode> masters) {
+        for (MasterNode master : masters) {
+            setSlaves(master.getNodeId(), master.getSlaves());
+        }
+    }
+
+    private void setSlaves(String masterNodeId, Set<Redis> slaves) {
+        Jedis jedis = null;
+        for (Redis slave : slaves) {
+            try {
+                //add slots
+                jedis = new Jedis(LOCAL_HOST, slave.ports().get(0));
+                jedis.clusterReplicate(masterNodeId);
             } finally {
                 if (jedis != null) {
                     jedis.close();
@@ -133,12 +197,35 @@ public class RealRedisCluster implements Cluster {
         }
     }
 
-    private static class Node {
+    private enum ClusterState {
+        OK("ok"), FAIL("fail");
+        private String state;
+
+        ClusterState(String s) {
+            state = s;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public static ClusterState getStateByStr(String s) {
+            for (ClusterState clusterState : ClusterState.values()) {
+                if (s.equals(clusterState.getState())) {
+                    return clusterState;
+                }
+            }
+            throw new IllegalStateException("illegal cluster state: " + s);
+        }
+    }
+
+    private static class MasterNode {
         final Redis master;
+        String nodeId;
         final RealRedisCluster.SlotRange slotRange;
         final Set<Redis> slaves;
 
-        public Node(Redis master, RealRedisCluster.SlotRange slotRange) {
+        public MasterNode(Redis master, SlotRange slotRange) {
             this.master = master;
             this.slotRange = slotRange;
             slaves = new HashSet<Redis>();
@@ -159,6 +246,14 @@ public class RealRedisCluster implements Cluster {
         public RealRedisCluster.SlotRange getSlotRange() {
             return slotRange;
         }
+
+        public String getNodeId() {
+            return nodeId;
+        }
+
+        public void setNodeId(String nodeId) {
+            this.nodeId = nodeId;
+        }
     }
 
     private static class SlotRange {
@@ -171,8 +266,8 @@ public class RealRedisCluster implements Cluster {
         }
 
         public int[] getRange() {
-            int[] range = new int[last - first];
-            for (int i = 0; i < last - first; i++) {
+            int[] range = new int[last - first + 1];
+            for (int i = 0; i <= last - first; i++) {
                 range[i] = first + i;
             }
             return range;

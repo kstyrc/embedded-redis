@@ -9,6 +9,8 @@ import java.util.List;
  */
 public class RealRedisClusterBuilder {
     Collection<Integer> ports;
+    private int numOfReplicates = 1;
+
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();
 
     public RealRedisClusterBuilder withServerBuilder(RedisServerBuilder serverBuilder) {
@@ -21,9 +23,14 @@ public class RealRedisClusterBuilder {
         return this;
     }
 
+    public RealRedisClusterBuilder numOfReplicates(int numOfReplicates) {
+        this.numOfReplicates = numOfReplicates;
+        return this;
+    }
+
     public RealRedisCluster build() {
         final List<Redis> servers = buildServers();
-        return new RealRedisCluster(servers);
+        return new RealRedisCluster(servers, numOfReplicates);
     }
 
     private List<Redis> buildServers() {
