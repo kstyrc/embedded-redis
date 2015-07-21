@@ -103,27 +103,17 @@ public class RealRedisCluster implements Cluster {
 
     private void joinCluster() {
         Jedis jedis = null;
-
-        //connect sequentially nodes
+        //connect all nodes
         for (int i = 0; i < servers.size() - 1; i++) {
-            try {
-                jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
-                jedis.clusterMeet(LOCAL_HOST, servers.get(i + 1).ports().get(0));
-
-            } finally {
-                if (jedis != null) {
-                    jedis.close();
+            for (int j = i + 1; j < servers.size(); j++) {
+                try {
+                    jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
+                    jedis.clusterMeet(LOCAL_HOST, servers.get(j).ports().get(0));
+                } finally {
+                    if (jedis != null) {
+                        jedis.close();
+                    }
                 }
-            }
-        }
-
-        // connect N-node to first-node
-        try {
-            jedis = new Jedis(LOCAL_HOST, servers.get(servers.size() - 1).ports().get(0));
-            jedis.clusterMeet(LOCAL_HOST, servers.get(0).ports().get(0));
-        } finally {
-            if (jedis != null) {
-                jedis.close();
             }
         }
     }
