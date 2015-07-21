@@ -78,6 +78,15 @@ public class RealRedisCluster implements Cluster {
         }
     }
 
+    @Override
+    public List<Integer> ports() {
+        List<Integer> ports = new ArrayList<Integer>();
+        for (Redis redis : servers) {
+            ports.addAll(redis.ports());
+        }
+        return ports;
+    }
+
     private ClusterState clusterState() {
         Redis redis = servers.get(0);
         Jedis jedis = null;
@@ -100,15 +109,21 @@ public class RealRedisCluster implements Cluster {
             try {
                 jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
                 jedis.clusterMeet(LOCAL_HOST, servers.get(i + 1).ports().get(0));
-                if (i == servers.size() - 2) {
-                    // connect N-node to first-node
-                    jedis = new Jedis(LOCAL_HOST, servers.get(servers.size() - 1).ports().get(0));
-                    jedis.clusterMeet(LOCAL_HOST, servers.get(0).ports().get(0));
-                }
+
             } finally {
                 if (jedis != null) {
                     jedis.close();
                 }
+            }
+        }
+
+        // connect N-node to first-node
+        try {
+            jedis = new Jedis(LOCAL_HOST, servers.get(servers.size() - 1).ports().get(0));
+            jedis.clusterMeet(LOCAL_HOST, servers.get(0).ports().get(0));
+        } finally {
+            if (jedis != null) {
+                jedis.close();
             }
         }
     }
