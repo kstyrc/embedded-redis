@@ -1,9 +1,13 @@
-package redis.embedded;
+package redis.embedded.cluster;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
+import redis.embedded.Redis;
+import redis.embedded.RedisExecProvider;
+import redis.embedded.RedisServerBuilder;
 import redis.embedded.exceptions.EmbeddedRedisException;
 import redis.embedded.util.OS;
 
@@ -12,9 +16,7 @@ import java.util.*;
 import static junit.framework.Assert.fail;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Created by dragan on 17.07.15.
@@ -23,44 +25,22 @@ public class RealRedisClusterTest {
     private Redis master1;
     private Redis master2;
     private Redis master3;
+    private static final int DEFAULT_REPLICATES = 1;
+    private static final int DEFAULT_NUMBER_RETRIES = 5;
+    private static final Collection<Integer> ports = Arrays.asList(3000, 3001, 3002, 3003);
+    private static final String LOCAL_HOST = "127.0.0.1";
 
-    private RealRedisCluster instance;
+    private RedisExecProvider redisExecProvider;
+    private Redis instance;
 
     @Before
     public void setUp() throws Exception {
         master1 = mock(Redis.class);
         master2 = mock(Redis.class);
         master3 = mock(Redis.class);
-    }
 
-    @Test
-    public void startShouldStartEntireCluster() throws Exception {
-        //given
-        final List<Redis> servers = Arrays.asList(master1, master2, master3);
-        instance = new RealRedisCluster(servers);
-
-        //when
-        instance.create();
-
-        //then
-        for (Redis s : servers) {
-            verify(s).start();
-        }
-    }
-
-    @Test
-    public void stopShouldStopEntireCluster() throws Exception {
-        //given
-        final List<Redis> servers = Arrays.asList(master1, master2, master3);
-        instance = new RealRedisCluster(servers);
-
-        //when
-        instance.stop();
-
-        //then
-        for (Redis s : servers) {
-            verify(s).stop();
-        }
+        redisExecProvider = RedisExecProvider.defaultProvider();
+        redisExecProvider.override(OS.UNIX, "redis-server-3.0.0");
     }
 
     @Test
@@ -69,7 +49,7 @@ public class RealRedisClusterTest {
         final List<Redis> oneServer = Arrays.asList(master1);
         //when
         try {
-            instance = new RealRedisCluster(oneServer);
+            instance = new RealRedisCluster(oneServer, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 3 master nodes."));
@@ -77,7 +57,7 @@ public class RealRedisClusterTest {
 
         final List<Redis> twoServers = Arrays.asList(master1, master2);
         try {
-            instance = new RealRedisCluster(twoServers);
+            instance = new RealRedisCluster(twoServers, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 3 master nodes."));
@@ -88,7 +68,7 @@ public class RealRedisClusterTest {
     public void numberOfReplicatesShouldBeMoreThatOne() throws Exception {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
         try {
-            instance = new RealRedisCluster(threeServers, 0);
+            instance = new RealRedisCluster(threeServers, 0, DEFAULT_NUMBER_RETRIES);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 1 replication."));
@@ -99,58 +79,70 @@ public class RealRedisClusterTest {
     public void numberOfReplicatesShouldBeLessThanNumberOfServers() throws Exception {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
         try {
-            instance = new RealRedisCluster(threeServers, 10);
+            instance = new RealRedisCluster(threeServers, 10, DEFAULT_NUMBER_RETRIES);
             fail();
         } catch (EmbeddedRedisException e) {
-            assertThat(e.getMessage(), equalTo("Redis Cluster requires number of replications less than number of nodes - 1."));
+            assertThat(e.getMessage(), equalTo("Redis Cluster requires number of replications less than (number of nodes - 1)."));
         }
     }
+
+    @Test
+    public void numberOfRetriesShouldBeMoreThanZero() throws Exception {
+        final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
+        try {
+            instance = new RealRedisCluster(threeServers, DEFAULT_REPLICATES, 0);
+            fail();
+        } catch (EmbeddedRedisException e) {
+            assertThat(e.getMessage(), equalTo("Redis Cluster requires number of retries more than zero."));
+        }
+    }
+
     @Test
     public void isActiveShouldCheckEntireClusterIfAllActive() throws Exception {
         //given
-        given(master1.isActive()).willReturn(true);
-        given(master2.isActive()).willReturn(true);
-        given(master3.isActive()).willReturn(true);
-        final List<Redis> servers = Arrays.asList(master1, master2, master3);
-        instance = new RealRedisCluster(servers);
-
-        //when
-        instance.create();
-        boolean isActive = instance.isActive();
-
-        //then
-        for (Redis s : servers) {
-            verify(s).isActive();
-        }
-        assertThat(isActive, equalTo(true));
-
-    }
-
-    @Test
-    public void createShouldStartEntireCluster() throws Exception {
-        //given
-        Collection<Integer> ports = Arrays.asList(3000, 3001, 3002, 3003);
-
-        RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
-        redisExecProvider.override(OS.UNIX, "redis-server-3.0.0");
         instance = new RealRedisClusterBuilder()
                 .withServerBuilder(new RedisServerBuilder()
                         .redisExecProvider(redisExecProvider))
                 .serverPorts(ports).build();
+        //when
+        instance.start();
+        boolean isActive = instance.isActive();
+
+        //then
+        assertThat(isActive, equalTo(true));
+    }
+
+    @Test
+    public void startShouldStartEntireCluster() throws Exception {
+        //given
+        instance = new RealRedisClusterBuilder()
+                .withServerBuilder(new RedisServerBuilder()
+                        .redisExecProvider(redisExecProvider))
+                .serverPorts(ports).build();
+
         Set<HostAndPort> hostAndPorts = new HashSet<HostAndPort>(ports.size());
         for (Integer port : ports) {
-            hostAndPorts.add(new HostAndPort("127.0.0.1", port));
+            hostAndPorts.add(new HostAndPort(LOCAL_HOST, port));
         }
-        String val = null;
+
         //when
+        JedisCluster jc = null;
         try {
-            instance.create();
             instance.start();
-            JedisCluster jc = new JedisCluster(hostAndPorts);
+            jc = new JedisCluster(hostAndPorts);
             jc.hset("key", "field", "value");
-            val = jc.hget("key", "field");
+            String val = jc.hget("key", "field");
             assertThat(val, equalTo("value"));
         } finally {
+            if (jc != null) {
+                jc.close();
+            }
+        }
+    }
+
+    @After
+    public void after() {
+        if (instance != null) {
             instance.stop();
         }
     }

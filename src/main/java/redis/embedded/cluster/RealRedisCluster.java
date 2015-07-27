@@ -1,6 +1,7 @@
-package redis.embedded;
+package redis.embedded.cluster;
 
 import redis.clients.jedis.Jedis;
+import redis.embedded.Redis;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.util.*;
@@ -8,26 +9,22 @@ import java.util.*;
 /**
  * Created by dragan on 17.07.15.
  */
-public class RealRedisCluster implements Cluster {
+public class RealRedisCluster implements Redis {
     private static final int CLUSTER_HASH_SLOTS_NUMBER = 16384;
     private static final String LOCAL_HOST = "127.0.0.1";
 
     private final List<Redis> servers = new LinkedList<Redis>();
     private final int numOfReplicates;
+    private final int numOfRetries;
 
-    RealRedisCluster(List<Redis> servers, int numOfReplicates) {
-        validateParams(servers, numOfReplicates);
-        this.servers.addAll(servers);
+    RealRedisCluster(List<Redis> servers, int numOfReplicates, int numOfRetries) {
         this.numOfReplicates = numOfReplicates;
-    }
-
-    RealRedisCluster(List<Redis> servers) {
-        validateParams(servers, 1);
+        this.numOfRetries = numOfRetries;
         this.servers.addAll(servers);
-        this.numOfReplicates = 1;
+        validateParams();
     }
 
-    private void validateParams(List<Redis> servers, int numOfReplicates) {
+    private void validateParams() {
         if (servers.size() <= 2) {
             throw new EmbeddedRedisException("Redis Cluster requires at least 3 master nodes.");
         }
@@ -35,25 +32,30 @@ public class RealRedisCluster implements Cluster {
             throw new EmbeddedRedisException("Redis Cluster requires at least 1 replication.");
         }
         if (numOfReplicates > servers.size() - 1) {
-            throw new EmbeddedRedisException("Redis Cluster requires number of replications less than number of nodes - 1.");
+            throw new EmbeddedRedisException("Redis Cluster requires number of replications less than (number of nodes - 1).");
         }
-    }
-
-    @Override
-    public void create() throws EmbeddedRedisException {
-        for (Redis redis : servers) {
-            redis.start();
+        if (numOfRetries < 1) {
+            throw new EmbeddedRedisException("Redis Cluster requires number of retries more than zero.");
         }
     }
 
     @Override
     public void start() throws EmbeddedRedisException {
+        for (Redis redis : servers) {
+            redis.start();
+        }
+
         List<MasterNode> masters = allocSlots();
         joinCluster();
         System.out.println("Waiting for the cluster to join...");
-        while (!clusterState().equals(ClusterState.OK)) {
+        int iter = 0;
+        while (!isClusterActive()) {
             try {
                 Thread.sleep(1000);
+                iter++;
+                if (iter == numOfRetries) {
+                    throw new EmbeddedRedisException("Redis cluster have not started.");
+                }
             } catch (InterruptedException e) {
                 throw new EmbeddedRedisException(e.getMessage(), e);
             }
@@ -68,7 +70,8 @@ public class RealRedisCluster implements Cluster {
                 return false;
             }
         }
-        return true;
+
+        return isClusterActive();
     }
 
     @Override
@@ -76,6 +79,19 @@ public class RealRedisCluster implements Cluster {
         for (Redis redis : servers) {
             redis.stop();
         }
+    }
+
+    @Override
+    public List<Integer> ports() {
+        List<Integer> ports = new ArrayList<Integer>();
+        for (Redis redis : servers) {
+            ports.addAll(redis.ports());
+        }
+        return ports;
+    }
+
+    private boolean isClusterActive() {
+        return clusterState().equals(ClusterState.OK);
     }
 
     private ClusterState clusterState() {
