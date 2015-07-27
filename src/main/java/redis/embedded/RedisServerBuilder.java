@@ -17,7 +17,7 @@ public class RedisServerBuilder {
 
     private File executable;
     private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
-    private Integer port = 6379;
+    private int port = 6379;
     private InetSocketAddress slaveOf;
     private String redisConf;
 
@@ -27,13 +27,13 @@ public class RedisServerBuilder {
         this.redisExecProvider = redisExecProvider;
         return this;
     }
-    
-    public RedisServerBuilder port(Integer port) {
+
+    public RedisServerBuilder port(int port) {
         this.port = port;
         return this;
     }
 
-    public RedisServerBuilder slaveOf(String hostname, Integer port) {
+    public RedisServerBuilder slaveOf(String hostname, int port) {
         this.slaveOf = new InetSocketAddress(hostname, port);
         return this;
     }
@@ -113,10 +113,8 @@ public class RedisServerBuilder {
             args.add(redisConf);
         }
 
-        if (port != null) {
-            args.add("--port");
-            args.add(Integer.toString(port));
-        }
+        args.add("--port");
+        args.add(Integer.toString(port));
 
         if (slaveOf != null) {
             args.add("--slaveof");

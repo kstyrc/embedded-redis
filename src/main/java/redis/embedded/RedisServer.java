@@ -14,7 +14,7 @@ public class RedisServer extends AbstractRedisInstance {
         this(DEFAULT_REDIS_PORT);
     }
 
-    public RedisServer(Integer port) throws IOException {
+    public RedisServer(int port) throws IOException {
         super(port);
         File executable = RedisExecProvider.defaultProvider().get();
         this.args = Arrays.asList(
@@ -23,7 +23,7 @@ public class RedisServer extends AbstractRedisInstance {
         );
 	}
 
-    public RedisServer(File executable, Integer port) {
+    public RedisServer(File executable, int port) {
         super(port);
         this.args = Arrays.asList(
                 executable.getAbsolutePath(),
@@ -31,7 +31,7 @@ public class RedisServer extends AbstractRedisInstance {
         );
     }
 
-    public RedisServer(RedisExecProvider redisExecProvider, Integer port) throws IOException {
+    public RedisServer(RedisExecProvider redisExecProvider, int port) throws IOException {
         super(port);
         this.args = Arrays.asList(
                 redisExecProvider.get().getAbsolutePath(),
