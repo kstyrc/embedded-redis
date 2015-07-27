@@ -1,4 +1,8 @@
-package redis.embedded;
+package redis.embedded.cluster;
+
+import redis.embedded.Redis;
+import redis.embedded.RedisServer;
+import redis.embedded.RedisServerBuilder;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,10 +12,14 @@ import java.util.List;
  * Created by dragan on 17.07.15.
  */
 public class RealRedisClusterBuilder {
+    private static final int DEFAULT_REPLICATES = 1;
+    private static final int DEFAULT_NUMBER_RETRIES = 5;
     Collection<Integer> ports;
-    private int numOfReplicates = 1;
+    private int numOfReplicates;
+    private int numOfRetries;
 
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();
+
 
     public RealRedisClusterBuilder withServerBuilder(RedisServerBuilder serverBuilder) {
         this.serverBuilder = serverBuilder;
@@ -28,9 +36,20 @@ public class RealRedisClusterBuilder {
         return this;
     }
 
+    public RealRedisClusterBuilder numOfRetries(int numOfRetries) {
+        this.numOfRetries = numOfRetries;
+        return this;
+    }
+
     public RealRedisCluster build() {
         final List<Redis> servers = buildServers();
-        return new RealRedisCluster(servers, numOfReplicates);
+        if (numOfReplicates == 0) {
+            numOfReplicates = DEFAULT_REPLICATES;
+        }
+        if (numOfRetries == 0) {
+            numOfRetries = DEFAULT_NUMBER_RETRIES;
+        }
+        return new RealRedisCluster(servers, numOfReplicates, numOfRetries);
     }
 
     private List<Redis> buildServers() {

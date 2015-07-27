@@ -1,6 +1,7 @@
-package redis.embedded;
+package redis.embedded.cluster;
 
 import redis.clients.jedis.Jedis;
+import redis.embedded.Redis;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.util.*;
@@ -8,26 +9,22 @@ import java.util.*;
 /**
  * Created by dragan on 17.07.15.
  */
-public class RealRedisCluster implements Cluster {
+public class RealRedisCluster implements Redis {
     private static final int CLUSTER_HASH_SLOTS_NUMBER = 16384;
     private static final String LOCAL_HOST = "127.0.0.1";
 
     private final List<Redis> servers = new LinkedList<Redis>();
     private final int numOfReplicates;
+    private final int numOfRetries;
 
-    RealRedisCluster(List<Redis> servers, int numOfReplicates) {
-        validateParams(servers, numOfReplicates);
-        this.servers.addAll(servers);
+    RealRedisCluster(List<Redis> servers, int numOfReplicates, int numOfRetries) {
         this.numOfReplicates = numOfReplicates;
-    }
-
-    RealRedisCluster(List<Redis> servers) {
-        validateParams(servers, 1);
+        this.numOfRetries = numOfRetries;
         this.servers.addAll(servers);
-        this.numOfReplicates = 1;
+        validateParams();
     }
 
-    private void validateParams(List<Redis> servers, int numOfReplicates) {
+    private void validateParams() {
         if (servers.size() <= 2) {
             throw new EmbeddedRedisException("Redis Cluster requires at least 3 master nodes.");
         }
@@ -35,25 +32,30 @@ public class RealRedisCluster implements Cluster {
             throw new EmbeddedRedisException("Redis Cluster requires at least 1 replication.");
         }
         if (numOfReplicates > servers.size() - 1) {
-            throw new EmbeddedRedisException("Redis Cluster requires number of replications less than number of nodes - 1.");
+            throw new EmbeddedRedisException("Redis Cluster requires number of replications less than (number of nodes - 1).");
         }
-    }
-
-    @Override
-    public void create() throws EmbeddedRedisException {
-        for (Redis redis : servers) {
-            redis.start();
+        if (numOfRetries < 1) {
+            throw new EmbeddedRedisException("Redis Cluster requires number of retries more than zero.");
         }
     }
 
     @Override
     public void start() throws EmbeddedRedisException {
+        for (Redis redis : servers) {
+            redis.start();
+        }
+
         List<MasterNode> masters = allocSlots();
         joinCluster();
         System.out.println("Waiting for the cluster to join...");
-        while (!clusterState().equals(ClusterState.OK)) {
+        int iter = 0;
+        while (!isClusterActive()) {
             try {
                 Thread.sleep(1000);
+                iter++;
+                if (iter == numOfRetries) {
+                    throw new EmbeddedRedisException("Redis cluster have not started.");
+                }
             } catch (InterruptedException e) {
                 throw new EmbeddedRedisException(e.getMessage(), e);
             }
@@ -68,7 +70,8 @@ public class RealRedisCluster implements Cluster {
                 return false;
             }
         }
-        return true;
+
+        return isClusterActive();
     }
 
     @Override
@@ -87,6 +90,10 @@ public class RealRedisCluster implements Cluster {
         return ports;
     }
 
+    private boolean isClusterActive() {
+        return clusterState().equals(ClusterState.OK);
+    }
+
     private ClusterState clusterState() {
         Redis redis = servers.get(0);
         Jedis jedis = null;
@@ -103,16 +110,20 @@ public class RealRedisCluster implements Cluster {
 
     private void joinCluster() {
         Jedis jedis = null;
-        //connect all nodes
+
+        //connect sequentially nodes
         for (int i = 0; i < servers.size() - 1; i++) {
-            for (int j = i + 1; j < servers.size(); j++) {
-                try {
-                    jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
-                    jedis.clusterMeet(LOCAL_HOST, servers.get(j).ports().get(0));
-                } finally {
-                    if (jedis != null) {
-                        jedis.close();
-                    }
+            try {
+                jedis = new Jedis(LOCAL_HOST, servers.get(i).ports().get(0));
+                jedis.clusterMeet(LOCAL_HOST, servers.get(i + 1).ports().get(0));
+                if (i == servers.size() - 2) {
+                    // connect N-node to first-node
+                    jedis = new Jedis(LOCAL_HOST, servers.get(servers.size() - 1).ports().get(0));
+                    jedis.clusterMeet(LOCAL_HOST, servers.get(0).ports().get(0));
+                }
+            } finally {
+                if (jedis != null) {
+                    jedis.close();
                 }
             }
         }
