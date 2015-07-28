@@ -1,5 +1,6 @@
 package redis.embedded.cluster;
 
+import redis.clients.jedis.Protocol;
 import redis.embedded.Redis;
 import redis.embedded.RedisServer;
 import redis.embedded.RedisServerBuilder;
@@ -14,9 +15,11 @@ import java.util.List;
 public class RealRedisClusterBuilder {
     private static final int DEFAULT_REPLICATES = 1;
     private static final int DEFAULT_NUMBER_RETRIES = 5;
+    private static final int CONNECTION_TIMEOUT = Protocol.DEFAULT_TIMEOUT;
     Collection<Integer> ports;
     private int numOfReplicates;
     private int numOfRetries;
+    private int connectionTimeout;
 
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();
 
@@ -41,6 +44,11 @@ public class RealRedisClusterBuilder {
         return this;
     }
 
+    public RealRedisClusterBuilder connectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+        return this;
+    }
+
     public RealRedisCluster build() {
         final List<Redis> servers = buildServers();
         if (numOfReplicates == 0) {
@@ -49,7 +57,10 @@ public class RealRedisClusterBuilder {
         if (numOfRetries == 0) {
             numOfRetries = DEFAULT_NUMBER_RETRIES;
         }
-        return new RealRedisCluster(servers, numOfReplicates, numOfRetries);
+        if (connectionTimeout == 0) {
+            connectionTimeout = CONNECTION_TIMEOUT;
+        }
+        return new RealRedisCluster(servers, numOfReplicates, numOfRetries, connectionTimeout);
     }
 
     private List<Redis> buildServers() {

@@ -16,10 +16,12 @@ public class RealRedisCluster implements Redis {
     private final List<Redis> servers = new LinkedList<Redis>();
     private final int numOfReplicates;
     private final int numOfRetries;
+    private final int connectionTimeout;
 
-    RealRedisCluster(List<Redis> servers, int numOfReplicates, int numOfRetries) {
+    RealRedisCluster(List<Redis> servers, int numOfReplicates, int numOfRetries, int connectionTimeout) {
         this.numOfReplicates = numOfReplicates;
         this.numOfRetries = numOfRetries;
+        this.connectionTimeout = connectionTimeout;
         this.servers.addAll(servers);
         validateParams();
     }

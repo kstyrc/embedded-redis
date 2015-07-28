@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.HostAndPort;
 import redis.clients.jedis.JedisCluster;
+import redis.clients.jedis.Protocol;
 import redis.embedded.Redis;
 import redis.embedded.RedisExecProvider;
 import redis.embedded.RedisServerBuilder;
@@ -27,6 +28,7 @@ public class RealRedisClusterTest {
     private Redis master3;
     private static final int DEFAULT_REPLICATES = 1;
     private static final int DEFAULT_NUMBER_RETRIES = 5;
+    private static final int CONNECTION_TIMEOUT = Protocol.DEFAULT_TIMEOUT;
     private static final Collection<Integer> ports = Arrays.asList(3000, 3001, 3002, 3003);
     private static final String LOCAL_HOST = "127.0.0.1";
 
@@ -49,7 +51,7 @@ public class RealRedisClusterTest {
         final List<Redis> oneServer = Arrays.asList(master1);
         //when
         try {
-            instance = new RealRedisCluster(oneServer, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES);
+            instance = new RealRedisCluster(oneServer, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES, CONNECTION_TIMEOUT);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 3 master nodes."));
@@ -57,7 +59,7 @@ public class RealRedisClusterTest {
 
         final List<Redis> twoServers = Arrays.asList(master1, master2);
         try {
-            instance = new RealRedisCluster(twoServers, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES);
+            instance = new RealRedisCluster(twoServers, DEFAULT_REPLICATES, DEFAULT_NUMBER_RETRIES, CONNECTION_TIMEOUT);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 3 master nodes."));
@@ -68,7 +70,7 @@ public class RealRedisClusterTest {
     public void numberOfReplicatesShouldBeMoreThatOne() throws Exception {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
         try {
-            instance = new RealRedisCluster(threeServers, 0, DEFAULT_NUMBER_RETRIES);
+            instance = new RealRedisCluster(threeServers, 0, DEFAULT_NUMBER_RETRIES, CONNECTION_TIMEOUT);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires at least 1 replication."));
@@ -79,7 +81,7 @@ public class RealRedisClusterTest {
     public void numberOfReplicatesShouldBeLessThanNumberOfServers() throws Exception {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
         try {
-            instance = new RealRedisCluster(threeServers, 10, DEFAULT_NUMBER_RETRIES);
+            instance = new RealRedisCluster(threeServers, 10, DEFAULT_NUMBER_RETRIES, CONNECTION_TIMEOUT);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires number of replications less than (number of nodes - 1)."));
@@ -90,7 +92,7 @@ public class RealRedisClusterTest {
     public void numberOfRetriesShouldBeMoreThanZero() throws Exception {
         final List<Redis> threeServers = Arrays.asList(master1, master2, master3);
         try {
-            instance = new RealRedisCluster(threeServers, DEFAULT_REPLICATES, 0);
+            instance = new RealRedisCluster(threeServers, DEFAULT_REPLICATES, 0, CONNECTION_TIMEOUT);
             fail();
         } catch (EmbeddedRedisException e) {
             assertThat(e.getMessage(), equalTo("Redis Cluster requires number of retries more than zero."));
