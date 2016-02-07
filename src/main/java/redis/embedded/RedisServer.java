@@ -1,5 +1,7 @@
 package redis.embedded;
 
+import com.google.common.collect.ObjectArrays;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,6 +24,19 @@ public class RedisServer extends AbstractRedisInstance {
                 "--port", Integer.toString(port)
         );
 	}
+
+    public RedisServer(int port, String... args) throws IOException {
+        super(port);
+        File executable = RedisExecProvider.defaultProvider().get();
+
+        String[] defaultArgs = new String[]{executable.getAbsolutePath(),
+                "--port", Integer.toString(port)
+        };
+
+        this.args = Arrays.asList(
+                ObjectArrays.concat(defaultArgs, args, String.class)
+        );
+    }
 
     public RedisServer(File executable, int port) {
         super(port);
