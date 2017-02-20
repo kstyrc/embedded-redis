@@ -4,7 +4,7 @@
     <groupId>it.ozimov</groupId>
     <artifactId>embedded-redis</artifactId>
     <packaging>jar</packaging>
-    <version>0.7.0-SNAPSHOT</version>
+    <version>0.7.0</version>
     <name>embedded-redis</name>
     <description>Redis embedded server for Java integration testing.
         Project forked from https://github.com/kstyrc/embedded-redis</description>
