@@ -1,11 +1,26 @@
 embedded-redis
 ==============
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kstyrc/embedded-redis?branch=master&svg=true)](https://ci.appveyor.com/project/kstyrc/embedded-redis) Windows
-
-[![Build Status](https://travis-ci.org/kstyrc/embedded-redis.png?branch=master)](https://travis-ci.org/kstyrc/embedded-redis) Linux
-
 Redis embedded server for Java integration testing
+
+Fork Notes
+==============
+This repository clones from [kstyrc](https://github.com/kstyrc/embedded-redis) original repository.
+The aim is to release some long waiting fixes.
+
+
+**Source Website:** *[github.com/ozimov/embedded-redis](http://github.com/ozimov/embedded-redis/)*<br />
+
+**Latest Release:** *0.7.0* <br />
+**Latest Artifact:** *it.ozimov:embedded-redis* <br />
+**Continuous Integration:** <br />
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/embedded-redis/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-core)
+<br />
+[![Build Status](https://travis-ci.org/ozimov/embedded-redis.svg?branch=master)](https://travis-ci.org/ozimov/embedded-redis)
+[![codecov.io](https://codecov.io/github/ozimov/embedded-redis/coverage.svg?branch=master)](https://codecov.io/github/ozimov/embedded-redis?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/grade/7a4364b93df6473fb18a597e900edceb)](https://www.codacy.com/app/roberto-trunfio/embedded-redis)
+
+![codecov.io](https://codecov.io/github/ozimov/embedded-redis/branch.svg?branch=master)
 
 Maven dependency
 ==============
@@ -13,25 +28,9 @@ Maven dependency
 Maven Central:
 ```xml
 <dependency>
-  <groupId>com.github.kstyrc</groupId>
+  <groupId>it.ozimov</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.6</version>
-</dependency>
-```
-
-Previous releases (before 0.6):
-```xml
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-
-...
-
-<dependency>
-  <groupId>redis.embedded</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>0.5</version>
+  <version>0.7.0</version>
 </dependency>
 ```
 
@@ -77,10 +76,11 @@ Or even create simple redis.conf file from scratch:
 RedisServer redisServer = RedisServer.builder()
   .redisExecProvider(customRedisProvider)
   .port(6379)
+  .setting("bind 127.0.0.1") // good for local development on Windows to prevent security popups
   .slaveOf("locahost", 6378)
   .setting("daemonize no")
   .setting("appendonly no")
-  .setting("maxheap 128M")
+  .setting("maxmemory 128M")
   .build();
 ```
 
