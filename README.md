@@ -76,6 +76,7 @@ Or even create simple redis.conf file from scratch:
 RedisServer redisServer = RedisServer.builder()
   .redisExecProvider(customRedisProvider)
   .port(6379)
+  .setting("bind 127.0.0.1") // good for local development on Windows to prevent security popups
   .slaveOf("locahost", 6378)
   .setting("daemonize no")
   .setting("appendonly no")
