@@ -79,7 +79,7 @@ RedisServer redisServer = RedisServer.builder()
   .slaveOf("locahost", 6378)
   .setting("daemonize no")
   .setting("appendonly no")
-  .setting("maxheap 128M")
+  .setting("maxmemory 128M")
   .build();
 ```
 
