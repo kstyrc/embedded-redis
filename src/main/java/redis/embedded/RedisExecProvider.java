@@ -1,19 +1,19 @@
 package redis.embedded;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import redis.embedded.util.Architecture;
 import redis.embedded.util.JarUtil;
 import redis.embedded.util.OS;
 import redis.embedded.util.OsArchitecture;
+import redis.embedded.util.Preconditions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 public class RedisExecProvider {
     
-    private final Map<OsArchitecture, String> executables = Maps.newHashMap();
+    private final Map<OsArchitecture, String> executables = new HashMap<OsArchitecture, String>();
 
     public static RedisExecProvider defaultProvider() {
         return new RedisExecProvider();
@@ -24,14 +24,14 @@ public class RedisExecProvider {
     }
 
     private void initExecutables() {
-        executables.put(OsArchitecture.WINDOWS_x86, "redis-server-2.8.19.exe");
-        executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-2.8.19.exe");
+        executables.put(OsArchitecture.WINDOWS_x86, "redis-server-3.2.11.exe");
+        executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-3.2.11.exe");
 
-        executables.put(OsArchitecture.UNIX_x86, "redis-server-2.8.19-32");
-        executables.put(OsArchitecture.UNIX_x86_64, "redis-server-2.8.19");
+        executables.put(OsArchitecture.UNIX_x86, "redis-server-3.2.11-32");
+        executables.put(OsArchitecture.UNIX_x86_64, "redis-server-3.2.11");
 
-        executables.put(OsArchitecture.MAC_OS_X_x86, "redis-server-2.8.19.app");
-        executables.put(OsArchitecture.MAC_OS_X_x86_64, "redis-server-2.8.19.app");
+        executables.put(OsArchitecture.MAC_OS_X_x86, "redis-server-3.2.11.app");
+        executables.put(OsArchitecture.MAC_OS_X_x86_64, "redis-server-3.2.11.app");
     }
 
     public RedisExecProvider override(OS os, String executable) {

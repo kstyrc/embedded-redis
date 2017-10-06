@@ -1,12 +1,12 @@
 package redis.embedded;
 
-import com.google.common.io.Resources;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.embedded.exceptions.RedisBuildingException;
 import redis.embedded.util.Architecture;
 import redis.embedded.util.OS;
+import redis.embedded.util.Resources;
 
 import static org.junit.Assert.*;
 
@@ -93,11 +93,11 @@ public class RedisServerTest {
     @Test
     public void shouldOverrideDefaultExecutable() throws Exception {
         RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
-                .override(OS.UNIX, Architecture.x86, Resources.getResource("redis-server-2.8.19-32").getFile())
-                .override(OS.UNIX, Architecture.x86_64, Resources.getResource("redis-server-2.8.19").getFile())
-                .override(OS.WINDOWS, Architecture.x86, Resources.getResource("redis-server-2.8.19.exe").getFile())
-                .override(OS.WINDOWS, Architecture.x86_64, Resources.getResource("redis-server-2.8.19.exe").getFile())
-                .override(OS.MAC_OS_X, Resources.getResource("redis-server-2.8.19").getFile());
+                .override(OS.UNIX, Architecture.x86, Resources.getResource("redis-server-3.2.11-32").getFile())
+                .override(OS.UNIX, Architecture.x86_64, Resources.getResource("redis-server-3.2.11").getFile())
+//TODO                .override(OS.WINDOWS, Architecture.x86, Resources.getResource("redis-server-3.2.11.exe").getFile())
+//TODO                .override(OS.WINDOWS, Architecture.x86_64, Resources.getResource("redis-server-3.2.11.exe").getFile())
+                .override(OS.MAC_OS_X, Resources.getResource("redis-server-3.2.11.app").getFile());
         
         redisServer = new RedisServerBuilder()
                 .redisExecProvider(customProvider)

@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
-
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
@@ -63,7 +61,7 @@ abstract class AbstractRedisInstance implements Redis {
                 }
             } while (!outputLine.matches(redisReadyPattern()));
         } finally {
-            IOUtils.closeQuietly(reader);
+            closeQuietly(reader);
         }
     }
 
@@ -101,6 +99,18 @@ abstract class AbstractRedisInstance implements Redis {
         return Arrays.asList(port);
     }
 
+    private static void closeQuietly(Reader reader) {
+        if (reader == null) {
+            return;
+        }
+
+        try {
+            reader.close();
+        } catch (Throwable ignored) {
+            //ignore
+        }
+    }
+
     private static class PrintReaderRunnable implements Runnable {
         private final BufferedReader reader;
 
@@ -112,7 +122,7 @@ abstract class AbstractRedisInstance implements Redis {
             try {
                 readLines();
             } finally {
-                IOUtils.closeQuietly(reader);
+                closeQuietly(reader);
             }
         }
 

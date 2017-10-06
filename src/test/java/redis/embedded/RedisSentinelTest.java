@@ -1,10 +1,10 @@
 package redis.embedded;
 
-import com.google.common.collect.Sets;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
@@ -50,7 +50,7 @@ public class RedisSentinelTest {
         JedisSentinelPool pool = null;
         Jedis jedis = null;
         try {
-            pool = new JedisSentinelPool("mymaster", Sets.newHashSet("localhost:26379"));
+            pool = new JedisSentinelPool("mymaster", Collections.singleton("localhost:26379"));
             jedis = pool.getResource();
             jedis.mset("abc", "1", "def", "2");
 

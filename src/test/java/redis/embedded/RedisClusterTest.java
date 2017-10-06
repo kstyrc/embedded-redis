@@ -1,6 +1,5 @@
 package redis.embedded;
 
-import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import redis.clients.jedis.Jedis;
@@ -8,6 +7,8 @@ import redis.clients.jedis.JedisSentinelPool;
 import redis.embedded.util.JedisUtil;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -104,7 +105,7 @@ public class RedisClusterTest {
         JedisSentinelPool pool = null;
         Jedis jedis = null;
         try {
-            pool = new JedisSentinelPool("ourmaster", Sets.newHashSet("localhost:26379"));
+            pool = new JedisSentinelPool("ourmaster", Collections.singleton("localhost:26379"));
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
@@ -123,7 +124,7 @@ public class RedisClusterTest {
         JedisSentinelPool pool = null;
         Jedis jedis = null;
         try {
-            pool = new JedisSentinelPool("ourmaster", Sets.newHashSet("localhost:26379"));
+            pool = new JedisSentinelPool("ourmaster", Collections.singleton("localhost:26379"));
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
@@ -142,7 +143,7 @@ public class RedisClusterTest {
         JedisSentinelPool pool = null;
         Jedis jedis = null;
         try {
-            pool = new JedisSentinelPool("ourmaster", Sets.newHashSet("localhost:26379"));
+            pool = new JedisSentinelPool("ourmaster", Collections.singleton("localhost:26379"));
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
@@ -161,7 +162,7 @@ public class RedisClusterTest {
         JedisSentinelPool pool = null;
         Jedis jedis = null;
         try {
-            pool = new JedisSentinelPool("ourmaster", Sets.newHashSet("localhost:26379", "localhost:26380"));
+            pool = new JedisSentinelPool("ourmaster", new HashSet<String>(Arrays.asList("localhost:26379", "localhost:26380")));
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
@@ -212,9 +213,9 @@ public class RedisClusterTest {
         Jedis jedis2 = null;
         Jedis jedis3 = null;
         try {
-            pool1 = new JedisSentinelPool(master1, Sets.newHashSet("localhost:26379", "localhost:26380", "localhost:26381"));
-            pool2 = new JedisSentinelPool(master2, Sets.newHashSet("localhost:26379", "localhost:26380", "localhost:26381"));
-            pool3 = new JedisSentinelPool(master3, Sets.newHashSet("localhost:26379", "localhost:26380", "localhost:26381"));
+            pool1 = new JedisSentinelPool(master1, new HashSet<String>(Arrays.asList("localhost:26379", "localhost:26380", "localhost:26381")));
+            pool2 = new JedisSentinelPool(master2, new HashSet<String>(Arrays.asList("localhost:26379", "localhost:26380", "localhost:26381")));
+            pool3 = new JedisSentinelPool(master3, new HashSet<String>(Arrays.asList("localhost:26379", "localhost:26380", "localhost:26381")));
             jedis1 = testPool(pool1);
             jedis2 = testPool(pool2);
             jedis3 = testPool(pool3);
