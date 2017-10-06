@@ -1,6 +1,5 @@
 package redis.embedded;
 
-import com.google.common.collect.Lists;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.util.ArrayList;
@@ -60,7 +59,7 @@ public class RedisCluster implements Redis {
     }
 
     public List<Redis> sentinels() {
-        return Lists.newLinkedList(sentinels);
+        return new LinkedList<Redis>(sentinels);
     }
 
     public List<Integer> sentinelPorts() {
@@ -72,7 +71,7 @@ public class RedisCluster implements Redis {
     }
 
     public List<Redis> servers() {
-        return Lists.newLinkedList(servers);
+        return new LinkedList<Redis>(servers);
     }
 
     public List<Integer> serverPorts() {

@@ -47,18 +47,6 @@
     </distributionManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>18.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-        </dependency>
-        
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>commons-logging</groupId>

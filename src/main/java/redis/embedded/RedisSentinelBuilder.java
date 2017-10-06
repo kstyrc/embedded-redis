@@ -1,8 +1,8 @@
 package redis.embedded;
 
-import com.google.common.base.Preconditions;
-import com.google.common.io.Files;
 import redis.embedded.exceptions.RedisBuildingException;
+import redis.embedded.util.Files;
+import redis.embedded.util.Preconditions;
 
 import java.io.File;
 import java.io.IOException;
