@@ -1,16 +1,30 @@
 embedded-redis
 ==============
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/kstyrc/embedded-redis?branch=master&svg=true)](https://ci.appveyor.com/project/kstyrc/embedded-redis) Windows
+[![Build Status](https://travis-ci.org/spinnaker/embedded-redis.png?branch=master)](https://travis-ci.org/spinnaker/embedded-redis) Linux
 
-[![Build Status](https://travis-ci.org/kstyrc/embedded-redis.png?branch=master)](https://travis-ci.org/kstyrc/embedded-redis) Linux
+Redis embedded server for Java integration testing.
 
-Redis embedded server for Java integration testing
+This was forked from [kstyrc](https://github.com/kstyrc/embedded-redis) to allow us to upgrade redis.
 
 Maven dependency
 ==============
+Gradle
+```groovy
+dependencies {
+  compile 'com.netflix.spinnaker.embedded-redis:embedded-redis:0.7'
+}
+```
+Maven
+```xml
+<dependency>
+  <groupId>com.netflix.spinnaker.embedded-redis</groupId>
+  <artifactId>embedded-redis</artifactId>
+  <version>0.7</version>
+</dependency>
+```
 
-Maven Central:
+Previous release on Maven Central:
 ```xml
 <dependency>
   <groupId>com.github.kstyrc</groupId>
@@ -19,21 +33,6 @@ Maven Central:
 </dependency>
 ```
 
-Previous releases (before 0.6):
-```xml
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-
-...
-
-<dependency>
-  <groupId>redis.embedded</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>0.5</version>
-</dependency>
-```
 
 Usage
 ==============
@@ -179,6 +178,9 @@ Contributors
 
 Changelog
 ==============
+### 0.7
+ * Support for Redis 3.2.11
+ * Removed Windows support  
 
 ### 0.6
  * Support JDK 6 +

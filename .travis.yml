@@ -1,6 +1,15 @@
 language: java
 jdk:
-  - oraclejdk8
+- oraclejdk8
+sudo: required
+dist: trusty
+install: gradle/installViaTravis.sh
+script: gradle/buildViaTravis.sh
+before_cache: gradle/prepCaches.sh
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.gradle"
+env:
+  global:
+  - secure:
+  - secure:
