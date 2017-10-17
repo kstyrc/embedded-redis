@@ -1,8 +1,7 @@
 package redis.embedded;
 
-import com.google.common.base.Strings;
-import com.google.common.io.Files;
 import redis.embedded.exceptions.RedisBuildingException;
+import redis.embedded.util.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class RedisServerBuilder {
         List<String> args = new ArrayList<String>();
         args.add(executable.getAbsolutePath());
 
-        if (!Strings.isNullOrEmpty(redisConf)) {
+        if (!(redisConf == null || redisConf.isEmpty())) {
             args.add(redisConf);
         }
 

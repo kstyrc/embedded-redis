@@ -4,3 +4,15 @@ target
 .settings
 .idea
 *.iml
+
+/target
+*/target
+/build
+*/build
+
+.gradle
+out
+.idea
+*.ipr
+*.iws
+*.iml

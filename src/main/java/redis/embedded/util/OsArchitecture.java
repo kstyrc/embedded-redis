@@ -1,7 +1,5 @@
 package redis.embedded.util;
 
-import com.google.common.base.Preconditions;
-
 public class OsArchitecture {
     
     public static final OsArchitecture WINDOWS_x86 = new OsArchitecture(OS.WINDOWS, Architecture.x86);

@@ -1,0 +1,16 @@
+# Names should be added to this file with this pattern:
+#
+# For individuals:
+#   Name <email address>
+#
+# For organizations:
+#   Organization <fnmatch pattern>
+
+Krzysztof Styrc <kstyrc@gmail.com>
+Piotr Turek <http://github.com/turu>
+anthonyu <http://github.com/anthonyu>
+Artem Orobets <http://github.com/enisher>
+Sean Simonsen <http://github.com/SeanSimonsen>
+Rob Winch <http://github.com/rwinch>
+Netflix, Inc <*@netflix.com>
+
