@@ -8,6 +8,7 @@ import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
     private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    private static final String REDIS_4_READY_PATTERN = ".*Ready to accept connections.*";
     private static final int DEFAULT_REDIS_PORT = 6379;
 
     public RedisServer() throws IOException {
@@ -48,8 +49,9 @@ public class RedisServer extends AbstractRedisInstance {
         return new RedisServerBuilder();
     }
 
+
     @Override
-    protected String redisReadyPattern() {
-        return REDIS_READY_PATTERN;
+    protected boolean isReady(String outputLine) {
+        return outputLine.matches(REDIS_READY_PATTERN) || outputLine.matches(REDIS_4_READY_PATTERN);
     }
 }
