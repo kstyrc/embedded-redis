@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    private static final String REDIS_READY_PATTERN = ".*(R|r)eady to accept connections.*";
     private static final int DEFAULT_REDIS_PORT = 6379;
 
     public RedisServer() throws IOException {
