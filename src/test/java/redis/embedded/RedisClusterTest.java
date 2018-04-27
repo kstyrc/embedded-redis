@@ -108,7 +108,8 @@ public class RedisClusterTest {
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
-                pool.returnResource(jedis);
+                jedis.close();
+            pool.close();
             cluster.stop();
         }
     }
@@ -127,7 +128,8 @@ public class RedisClusterTest {
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
-                pool.returnResource(jedis);
+                jedis.close();
+            pool.close();
             cluster.stop();
         }
     }
@@ -146,7 +148,8 @@ public class RedisClusterTest {
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
-                pool.returnResource(jedis);
+                jedis.close();
+            pool.close();
             cluster.stop();
         }
     }
@@ -165,7 +168,8 @@ public class RedisClusterTest {
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
-                pool.returnResource(jedis);
+                jedis.close();
+            pool.close();
             cluster.stop();
         }
     }
@@ -186,7 +190,8 @@ public class RedisClusterTest {
             jedis = testPool(pool);
         } finally {
             if (jedis != null)
-                pool.returnResource(jedis);
+                jedis.close();
+            pool.close();
             cluster.stop();
         }
     }
@@ -219,12 +224,18 @@ public class RedisClusterTest {
             jedis2 = testPool(pool2);
             jedis3 = testPool(pool3);
         } finally {
+
             if (jedis1 != null)
-                pool1.returnResource(jedis1);
+                jedis1.close();
+            pool1.close();
+
             if (jedis2 != null)
-                pool2.returnResource(jedis2);
+                jedis2.close();
+            pool2.close();
+
             if (jedis3 != null)
-                pool3.returnResource(jedis3);
+                jedis3.close();
+            pool3.close();
             cluster.stop();
         }
     }
@@ -236,6 +247,7 @@ public class RedisClusterTest {
         final String master2 = "master2";
         final String master3 = "master3";
         final RedisCluster cluster = RedisCluster.builder().ephemeral().sentinelCount(3).quorumSize(2)
+//        final RedisCluster cluster = RedisCluster.builder()
                 .replicationGroup(master1, 1)
                 .replicationGroup(master2, 1)
                 .replicationGroup(master3, 1)
@@ -259,11 +271,16 @@ public class RedisClusterTest {
             jedis3 = testPool(pool3);
         } finally {
             if (jedis1 != null)
-                pool1.returnResource(jedis1);
+                jedis1.close();
+            pool1.close();
+
             if (jedis2 != null)
-                pool2.returnResource(jedis2);
+                jedis2.close();
+            pool2.close();
+
             if (jedis3 != null)
-                pool3.returnResource(jedis3);
+                jedis3.close();
+            pool3.close();
             cluster.stop();
         }
     }

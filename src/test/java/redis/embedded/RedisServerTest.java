@@ -72,6 +72,7 @@ public class RedisServerTest {
     public void shouldIndicateInactiveBeforeStart() throws Exception {
         redisServer = new RedisServer(6379);
         assertFalse(redisServer.isActive());
+		redisServer.stop();
     }
 
     @Test
@@ -116,4 +117,25 @@ public class RedisServerTest {
                 .redisExecProvider(buggyProvider)
                 .build();
     }
+
+
+	@Test
+	public void shouldConnectToServerAsSlave() throws Exception {
+
+		RedisExecProvider customRedisProvider = RedisExecProvider.defaultProvider();
+
+		RedisServer redisServer = RedisServer.builder()
+				.redisExecProvider(customRedisProvider)
+				.port(6379)
+				.slaveOf("localhost", 6379)
+//				.configFile("/path/to/your/redis.conf")
+				.setting("daemonize no")
+				.setting("appendonly no")
+//				.setting("maxheap 128M")
+				.build();
+
+		redisServer.start();
+		redisServer.stop();
+
+	}
 }
