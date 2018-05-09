@@ -109,7 +109,8 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             cluster.stop();
         }
     }
