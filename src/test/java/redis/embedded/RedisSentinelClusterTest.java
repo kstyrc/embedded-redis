@@ -129,7 +129,8 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             cluster.stop();
         }
     }
@@ -149,7 +150,8 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             cluster.stop();
         }
     }
@@ -169,7 +171,8 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             cluster.stop();
         }
     }
@@ -191,7 +194,8 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             cluster.stop();
         }
     }
@@ -227,15 +231,18 @@ public class RedisSentinelClusterTest {
 
             if (jedis1 != null)
                 jedis1.close();
-            pool1.close();
+            if(pool1 != null)
+                pool1.close();
 
             if (jedis2 != null)
                 jedis2.close();
-            pool2.close();
+            if(pool2 != null)
+                pool2.close();
 
             if (jedis3 != null)
                 jedis3.close();
-            pool3.close();
+            if(pool3 != null)
+                pool3.close();
             cluster.stop();
         }
     }
@@ -272,15 +279,18 @@ public class RedisSentinelClusterTest {
         } finally {
             if (jedis1 != null)
                 jedis1.close();
-            pool1.close();
+            if(pool1 != null)
+                pool1.close();
 
             if (jedis2 != null)
                 jedis2.close();
-            pool2.close();
+            if(pool2 != null)
+                pool2.close();
 
             if (jedis3 != null)
                 jedis3.close();
-            pool3.close();
+            if(pool3 != null)
+                pool3.close();
             cluster.stop();
         }
     }
