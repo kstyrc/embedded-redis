@@ -61,7 +61,8 @@ public class RedisSentinelTest {
         } finally {
             if (jedis != null)
                 jedis.close();
-            pool.close();
+            if(pool != null)
+                pool.close();
             sentinel.stop();
             server.stop();
         }
