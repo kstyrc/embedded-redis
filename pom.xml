@@ -1,13 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.github.kstyrc</groupId>
+    <groupId>com.github.JiseongKim</groupId>
     <artifactId>embedded-redis</artifactId>
     <packaging>jar</packaging>
     <version>0.7-SNAPSHOT</version>
     <name>embedded-redis</name>
     <description>Redis embedded server for Java integration testing</description>
-    <url>https://github.com/kstyrc/embedded-redis</url>
+    <url>https://github.com/jiseongKim/embedded-redis</url>
 
     <licenses>
         <license>
@@ -18,9 +18,9 @@
     </licenses>
 
     <scm>
-        <url>https://github.com/kstyrc/embedded-redis</url>
-        <connection>scm:git:https://github.com/kstyrc/embedded-redis.git</connection>
-        <developerConnection>scm:git:https://github.com/kstyrc/embedded-redis.git</developerConnection>
+        <url>https://github.com/JiseongKim/embedded-redis</url>
+        <connection>scm:git:https://github.com/JiseongKim/embedded-redis.git</connection>
+        <developerConnection>scm:git:https://github.com/JiseongKim/embedded-redis.git</developerConnection>
         <tag>embedded-redis-0.5</tag>
     </scm>
 

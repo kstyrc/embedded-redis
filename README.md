@@ -1,8 +1,6 @@
 embedded-redis
 ==============
 
-[![Build Status](https://travis-ci.org/JiseongKim/embedded-redis.png?branch=master)](https://travis-ci.org/JiseongKim/embedded-redis) Linux
-
 Redis embedded server for Java integration testing
 
 Forked from (https://github.com/kstyrc/embedded-redis)
