@@ -1,5 +1,8 @@
 package redis.embedded;
 
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.*;
@@ -9,9 +12,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.commons.io.IOUtils;
-
 abstract class AbstractRedisInstance implements Redis {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
 	private Process redisProcess;
@@ -53,17 +56,20 @@ abstract class AbstractRedisInstance implements Redis {
 
     private void awaitRedisServerReady() throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
+        String outputLine = null;
         try {
-            String outputLine;
             do {
                 outputLine = reader.readLine();
                 if (outputLine == null) {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-//                System.out.println(outputLine);
             } while (!outputLine.matches(redisReadyPattern()));
-        } finally {
+        } catch (Exception e) {
+            if(outputLine != null) {
+                logger.error("[awaitRedisServerReady]{}",outputLine);
+            }
+        }finally {
             IOUtils.closeQuietly(reader);
         }
     }
