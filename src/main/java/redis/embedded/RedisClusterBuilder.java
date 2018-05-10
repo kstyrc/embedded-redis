@@ -55,7 +55,9 @@ public class RedisClusterBuilder {
             serverBuilder.reset();
             serverBuilder.port(master.getMasterRedisPort());
             serverBuilder.setting("cluster-enabled yes");
-            serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
+            if(this.clusterNodeTimeoutMS != null) {
+                serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
+            }
             if (!master.getMasterRedisIp().equals("127.0.0.1")) {
                 serverBuilder.setting("bind " + master.getMasterRedisIp() + " 127.0.0.1");
             }
@@ -72,7 +74,9 @@ public class RedisClusterBuilder {
             serverBuilder.reset();
             serverBuilder.port(slave.getSlavePort());
             serverBuilder.setting("cluster-enabled yes");
-            serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
+            if(this.clusterNodeTimeoutMS != null) {
+                serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
+            }
             if (!slave.getMasterRedisIp().equals("127.0.0.1")) {
                 serverBuilder.setting("bind " + slave.getSlaveIp() + " 127.0.0.1");
             }
