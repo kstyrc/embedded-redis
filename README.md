@@ -24,7 +24,8 @@ Running RedisServer cluster like :
                 "127.0.0.1", 9400));
 
         RedisCluster redisCluster1 = RedisCluster.builder()
-                .clusterNodeTimeoutMS(1000)
+                .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
+                .basicAuthPassword("password") // can be omitted(if you don't want use AUTH
                 .masters(masters1)
                 .slaves(slaves1)
                 .meetWith("127.0.0.1", 9400)
@@ -42,7 +43,8 @@ Running RedisServer cluster like :
                 "127.0.0.1", 9500));
 
         RedisCluster redisCluster2 = RedisCluster.builder()
-                .clusterNodeTimeoutMS(1000)
+                .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
+                .basicAuthPassword("password") // can be omitted(if you don't want use AUTH
                 .masters(masters2)
                 .slaves(slaves2)
                 .meetWith("127.0.0.1", 9400)
@@ -61,7 +63,8 @@ Running RedisServer cluster like :
                 "127.0.0.1", 9600));
 
         RedisCluster redisCluster3 = RedisCluster.builder()
-                .clusterNodeTimeoutMS(1000)
+                .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
+                .basicAuthPassword("password") // can be omitted(if you don't want use AUTH
                 .masters(masters3)
                 .slaves(slaves3)
                 .meetWith("127.0.0.1", 9400)

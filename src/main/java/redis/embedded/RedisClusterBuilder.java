@@ -16,6 +16,7 @@ public class RedisClusterBuilder {
     private RedisServerBuilder serverBuilder = new RedisServerBuilder();
 
     private Integer clusterNodeTimeoutMS = 30000; //Default timeout is 3 seconds.
+    private String basicAuthPassword = null;
 
     public RedisClusterBuilder masters(Collection<ClusterMaster> masters) {
         this.masters.addAll(masters);
@@ -38,20 +39,28 @@ public class RedisClusterBuilder {
         return this;
     }
 
+    public RedisClusterBuilder basicAuthPassword(String password) {
+        this.basicAuthPassword = password;
+        return this;
+    }
+
     public RedisCluster build() {
         buildMasters();
         buildSlaves();
-        return new RedisCluster(masters, slaves, meetRedisIp, meetRedisPort);
+        return new RedisCluster(masters, slaves, meetRedisIp, meetRedisPort, basicAuthPassword);
     }
 
     public void buildMasters() {
-        serverBuilder.reset();
         for (ClusterMaster master : masters) {
+            serverBuilder.reset();
             serverBuilder.port(master.getMasterRedisPort());
             serverBuilder.setting("cluster-enabled yes");
             serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
             if (!master.getMasterRedisIp().equals("127.0.0.1")) {
                 serverBuilder.setting("bind " + master.getMasterRedisIp() + " 127.0.0.1");
+            }
+            if(basicAuthPassword != null) {
+                serverBuilder.setting("requirepass " + basicAuthPassword);
             }
             final RedisServer redisMaster = serverBuilder.build();
             master.setMasterRedis(redisMaster);
@@ -59,13 +68,16 @@ public class RedisClusterBuilder {
     }
 
     public void buildSlaves() {
-        serverBuilder.reset();
         for (ClusterSlave slave : this.slaves) {
+            serverBuilder.reset();
             serverBuilder.port(slave.getSlavePort());
             serverBuilder.setting("cluster-enabled yes");
             serverBuilder.setting("cluster-node-timeout " + clusterNodeTimeoutMS);
             if (!slave.getMasterRedisIp().equals("127.0.0.1")) {
                 serverBuilder.setting("bind " + slave.getSlaveIp() + " 127.0.0.1");
+            }
+            if(basicAuthPassword != null) {
+                serverBuilder.setting("requirepass " + basicAuthPassword);
             }
             final RedisServer redisSlave = serverBuilder.build();
             slave.setSlaveRedis(redisSlave);

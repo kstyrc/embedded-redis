@@ -23,13 +23,16 @@ public class RedisCluster implements Redis {
 
     private String meetRedisIp = null;
     private Integer meetRedisPort = null;
+    private String basicAuthPassword = null;
 
     RedisCluster(List<ClusterMaster> masters, List<ClusterSlave> slaves,
-                 String meetRedisIp, Integer meetRedisPort) {
+                 String meetRedisIp, Integer meetRedisPort,
+                 String basicAuthPassword) {
         this.masters.addAll(masters);
         this.slaves.addAll(slaves);
         this.meetRedisIp = meetRedisIp;
         this.meetRedisPort = meetRedisPort;
+        this.basicAuthPassword = basicAuthPassword;
     }
 
     @Override
@@ -54,6 +57,9 @@ public class RedisCluster implements Redis {
 
             if (meetRedisIp != null && meetRedisPort != null) {
                 Jedis jedis = new Jedis(master.getMasterRedisIp(), master.getMasterRedisPort());
+                if(this.basicAuthPassword != null) {
+                    jedis.auth(this.basicAuthPassword);
+                }
                 jedis.clusterMeet(meetRedisIp, meetRedisPort);
             }
         }
@@ -63,11 +69,19 @@ public class RedisCluster implements Redis {
             slave.getSlaveRedis().start();
 
             final Jedis jedisSlave = new Jedis(slave.getSlaveIp(), slave.getSlavePort());
+
+            if(this.basicAuthPassword != null) {
+                jedisSlave.auth(this.basicAuthPassword);
+            }
             if (meetRedisIp != null && meetRedisPort != null) {
                 jedisSlave.clusterMeet(meetRedisIp, meetRedisPort);
             }
 
             final Jedis jedisMaster = new Jedis(slave.getMasterRedisIp(), slave.getMasterRedisPort());
+
+            if(this.basicAuthPassword != null) {
+                jedisMaster.auth(this.basicAuthPassword);
+            }
 
 
             ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -137,6 +151,11 @@ public class RedisCluster implements Redis {
             }
 
             Jedis jedis = new Jedis(master.getMasterRedisIp(), master.getMasterRedisPort());
+
+            if(this.basicAuthPassword != null) {
+                jedis.auth(this.basicAuthPassword);
+            }
+
             jedis.clusterAddSlots(nodeSlots);
         }
     }
