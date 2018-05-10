@@ -13,7 +13,7 @@ Usage
 
 Running RedisServer cluster like :
 
-```
+```java
         List<ClusterMaster> masters1 = new LinkedList<ClusterMaster>();
         masters1.add(new ClusterMaster("127.0.0.1", 9400,
                 3, 0));
