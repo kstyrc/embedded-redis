@@ -1,13 +1,12 @@
 embedded-redis
 ==============
 
-Redis embedded server for Java integration testing
-
 Forked from (https://github.com/kstyrc/embedded-redis)</br>
 Based on the embedded-redis(of kstyrc), this embedded-redis updated the following functions.
 - Support redis server 4.0.9
 - Provide functions for redis cluster (not only sentinel custer)
-
+- So, previous RedisCluster is changed to RedisSentinelCluster
+- And RedisCluster is added to support Redis Cluster(which comes from Redis 3.0)
 
 Usage
 ==============
