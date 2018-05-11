@@ -8,6 +8,16 @@ Based on the embedded-redis(of kstyrc), this embedded-redis updated the followin
 - So, previous RedisCluster is changed to RedisSentinelCluster
 - And RedisCluster is added to support Redis Cluster(which comes from Redis 3.0)
 
+Compatibility
+- Linux (Works All)
+- Windows (Sentinel doesn't work)
+- Mac (Sentinel doesn't work)
+
+Redis Version
+- Linux (Redis 4.0.9)
+- Windows (Redis 3.0.504)
+- mac (Redis 4.0.9)
+
 Usage
 ==============
 
