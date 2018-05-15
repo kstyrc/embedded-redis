@@ -11,7 +11,7 @@ The aim is to release some long waiting fixes.
 
 **Source Website:** *[github.com/ozimov/embedded-redis](http://github.com/ozimov/embedded-redis/)*<br />
 
-**Latest Release:** *0.7.1* <br />
+**Latest Release:** *0.7.2* <br />
 **Latest Artifact:** *it.ozimov:embedded-redis* <br />
 **Continuous Integration:** <br />
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/embedded-redis/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-core)
@@ -30,7 +30,7 @@ Maven Central:
 <dependency>
   <groupId>it.ozimov</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.7.1</version>
+  <version>0.7.2</version>
 </dependency>
 ```
 
