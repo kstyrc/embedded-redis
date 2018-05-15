@@ -24,7 +24,7 @@ echo "\n----------------------------------------"
 echo "When at prompt, type the release version (e.g. from 1.0-SNAPSHOT to 1.0)\n"
 mvn --settings ~/.m2/settings.xml versions:set
 git commit -am "[Deploy phase] Preparing release"
-mvn --settings ~/.m2/settings.xml clean deploy -P release
+mvn --settings ~/.m2/settings.xml clean deploy -DskipTests -P release
 mvn --settings ~/.m2/settings.xml scm:tag
 echo 'Release deployed'
 
