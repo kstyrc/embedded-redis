@@ -10,17 +10,13 @@ public class RedisServer extends AbstractRedisInstance {
     private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
     private static final int DEFAULT_REDIS_PORT = 6379;
 
-    public RedisServer() throws IOException {
+    public RedisServer() {
         this(DEFAULT_REDIS_PORT);
     }
 
-    public RedisServer(int port) throws IOException {
+    public RedisServer(int port) {
         super(port);
-        File executable = RedisExecProvider.defaultProvider().get();
-        this.args = Arrays.asList(
-                executable.getAbsolutePath(),
-                "--port", Integer.toString(port)
-        );
+        this.args = builder().port(port).build().args;
 	}
 
     public RedisServer(File executable, int port) {

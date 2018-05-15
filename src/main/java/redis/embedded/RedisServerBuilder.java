@@ -17,6 +17,7 @@ public class RedisServerBuilder {
 
     private File executable;
     private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
+    private String bind="127.0.0.1";
     private int port = 6379;
     private InetSocketAddress slaveOf;
     private String redisConf;
@@ -25,6 +26,11 @@ public class RedisServerBuilder {
 
     public RedisServerBuilder redisExecProvider(RedisExecProvider redisExecProvider) {
         this.redisExecProvider = redisExecProvider;
+        return this;
+    }
+
+    public RedisServerBuilder bind(String bind) {
+        this.bind = bind;
         return this;
     }
 
@@ -66,6 +72,7 @@ public class RedisServerBuilder {
     }
 
     public RedisServer build() {
+        setting("bind "+bind);
         tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
         return new RedisServer(args, port);
