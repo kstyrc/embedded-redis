@@ -22,7 +22,7 @@
         <url>https://github.com/ozimov/embedded-redis</url>
         <connection>scm:git:https://github.com/ozimov/embedded-redis.git</connection>
         <developerConnection>scm:git:https://github.com/ozimov/embedded-redis.git</developerConnection>
-        <tag>embedded-redis-0.7.0</tag>
+        <tag>embedded-redis-0.7.1</tag>
     </scm>
 
     <developers>
