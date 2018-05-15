@@ -14,7 +14,7 @@ The aim is to release some long waiting fixes.
 **Latest Release:** *0.7.2* <br />
 **Latest Artifact:** *it.ozimov:embedded-redis* <br />
 **Continuous Integration:** <br />
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/embedded-redis/badge.svg)](https://maven-badges.herokuapp.com/maven-central/ com.github.ozimov/spring-boot-email-core)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/it.ozimov/embedded-redis/badge.svg)](https://maven-badges.herokuapp.com/maven-central/it.ozimov/embedded-redis)
 <br />
 [![Build Status](https://travis-ci.org/ozimov/embedded-redis.svg?branch=master)](https://travis-ci.org/ozimov/embedded-redis)
 [![codecov.io](https://codecov.io/github/ozimov/embedded-redis/coverage.svg?branch=master)](https://codecov.io/github/ozimov/embedded-redis?branch=master)
