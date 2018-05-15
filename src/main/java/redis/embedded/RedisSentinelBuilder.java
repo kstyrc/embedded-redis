@@ -21,6 +21,7 @@ public class RedisSentinelBuilder {
 
     private File executable;
     private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
+    private String bind="127.0.0.1";
     private Integer port = 26379;
     private int masterPort = 6379;
     private String masterName = "mymaster";
@@ -34,6 +35,11 @@ public class RedisSentinelBuilder {
 
     public RedisSentinelBuilder redisExecProvider(RedisExecProvider redisExecProvider) {
         this.redisExecProvider = redisExecProvider;
+        return this;
+    }
+
+    public RedisSentinelBuilder bind(String bind) {
+        this.bind = bind;
         return this;
     }
 
@@ -127,6 +133,7 @@ public class RedisSentinelBuilder {
         if (redisConfigBuilder == null) {
             addDefaultReplicationGroup();
         }
+        setting("bind "+bind);
         setting(String.format(PORT_LINE, port));
         final String configString = redisConfigBuilder.toString();
 
