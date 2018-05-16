@@ -72,6 +72,7 @@ public class RedisServerTest {
     public void shouldIndicateInactiveBeforeStart() throws Exception {
         redisServer = new RedisServer(6379);
         assertFalse(redisServer.isActive());
+		redisServer.stop();
     }
 
     @Test
@@ -93,11 +94,11 @@ public class RedisServerTest {
     @Test
     public void shouldOverrideDefaultExecutable() throws Exception {
         RedisExecProvider customProvider = RedisExecProvider.defaultProvider()
-                .override(OS.UNIX, Architecture.x86, Resources.getResource("redis-server-2.8.19-32").getFile())
-                .override(OS.UNIX, Architecture.x86_64, Resources.getResource("redis-server-2.8.19").getFile())
-                .override(OS.WINDOWS, Architecture.x86, Resources.getResource("redis-server-2.8.19.exe").getFile())
-                .override(OS.WINDOWS, Architecture.x86_64, Resources.getResource("redis-server-2.8.19.exe").getFile())
-                .override(OS.MAC_OS_X, Resources.getResource("redis-server-2.8.19").getFile());
+                .override(OS.UNIX, Architecture.x86, Resources.getResource("redis-server-4.0.9").getFile())
+                .override(OS.UNIX, Architecture.x86_64, Resources.getResource("redis-server-4.0.9").getFile())
+                .override(OS.WINDOWS, Architecture.x86, Resources.getResource("redis-server-3.0.504.exe").getFile())
+                .override(OS.WINDOWS, Architecture.x86_64, Resources.getResource("redis-server-3.0.504.exe").getFile())
+                .override(OS.MAC_OS_X, Resources.getResource("redis-server-4.0.9.mac").getFile());
         
         redisServer = new RedisServerBuilder()
                 .redisExecProvider(customProvider)
@@ -116,4 +117,25 @@ public class RedisServerTest {
                 .redisExecProvider(buggyProvider)
                 .build();
     }
+
+
+	@Test
+	public void shouldConnectToServerAsSlave() throws Exception {
+
+		RedisExecProvider customRedisProvider = RedisExecProvider.defaultProvider();
+
+		RedisServer redisServer = RedisServer.builder()
+				.redisExecProvider(customRedisProvider)
+				.port(6379)
+				.slaveOf("localhost", 6379)
+//				.configFile("/path/to/your/redis.conf")
+				.setting("daemonize no")
+				.setting("appendonly no")
+//				.setting("maxheap 128M")
+				.build();
+
+		redisServer.start();
+		redisServer.stop();
+
+	}
 }

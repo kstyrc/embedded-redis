@@ -1,5 +1,7 @@
 package redis.embedded;
 
+import redis.embedded.util.OsArchitecture;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,7 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    private static final String REDIS_4_READY_PATTERN = ".*Server initialized.*";
+    private static final String REDIS_3_READY_PATTERN = ".*Server started.*";
     private static final int DEFAULT_REDIS_PORT = 6379;
 
     public RedisServer() throws IOException {
@@ -50,6 +53,14 @@ public class RedisServer extends AbstractRedisInstance {
 
     @Override
     protected String redisReadyPattern() {
-        return REDIS_READY_PATTERN;
+
+        OsArchitecture os = OsArchitecture.detect();
+        if(os.equals(OsArchitecture.WINDOWS_x86) || os.equals(OsArchitecture.WINDOWS_x86_64)) {
+            //In case of Windows, it use redis 3.0.XX
+            //So it has different ready pattern.
+            return REDIS_3_READY_PATTERN;
+        } else {
+            return REDIS_4_READY_PATTERN;
+        }
     }
 }

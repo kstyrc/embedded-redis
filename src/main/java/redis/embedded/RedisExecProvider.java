@@ -12,26 +12,26 @@ import java.io.IOException;
 import java.util.Map;
 
 public class RedisExecProvider {
-    
+
     private final Map<OsArchitecture, String> executables = Maps.newHashMap();
 
     public static RedisExecProvider defaultProvider() {
         return new RedisExecProvider();
     }
-    
+
     private RedisExecProvider() {
         initExecutables();
     }
 
     private void initExecutables() {
-        executables.put(OsArchitecture.WINDOWS_x86, "redis-server-2.8.19.exe");
-        executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-2.8.19.exe");
+        executables.put(OsArchitecture.WINDOWS_x86, "redis-server-3.0.504.exe");
+        executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-3.0.504.exe");
 
-        executables.put(OsArchitecture.UNIX_x86, "redis-server-2.8.19-32");
-        executables.put(OsArchitecture.UNIX_x86_64, "redis-server-2.8.19");
+        executables.put(OsArchitecture.UNIX_x86, "redis-server-4.0.9");
+        executables.put(OsArchitecture.UNIX_x86_64, "redis-server-4.0.9");
 
-        executables.put(OsArchitecture.MAC_OS_X_x86, "redis-server-2.8.19.app");
-        executables.put(OsArchitecture.MAC_OS_X_x86_64, "redis-server-2.8.19.app");
+        executables.put(OsArchitecture.MAC_OS_X_x86, "redis-server-4.0.9.mac");
+        executables.put(OsArchitecture.MAC_OS_X_x86_64, "redis-server-4.0.9.mac");
     }
 
     public RedisExecProvider override(OS os, String executable) {
@@ -47,14 +47,14 @@ public class RedisExecProvider {
         executables.put(new OsArchitecture(os, arch), executable);
         return this;
     }
-    
+
     public File get() throws IOException {
         OsArchitecture osArch = OsArchitecture.detect();
         String executablePath = executables.get(osArch);
-         return fileExists(executablePath) ?
+        return fileExists(executablePath) ?
                 new File(executablePath) :
                 JarUtil.extractExecutableFromJar(executablePath);
-        
+
     }
 
     private boolean fileExists(String executablePath) {

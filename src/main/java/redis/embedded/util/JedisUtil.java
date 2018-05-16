@@ -1,7 +1,7 @@
 package redis.embedded.util;
 
 import redis.embedded.Redis;
-import redis.embedded.RedisCluster;
+import redis.embedded.RedisSentinelCluster;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,7 +13,7 @@ public class JedisUtil {
         return portsToJedisHosts(ports);
     }
 
-    public static Set<String> sentinelHosts(RedisCluster cluster) {
+    public static Set<String> sentinelHosts(RedisSentinelCluster cluster) {
         final List<Integer> ports = cluster.sentinelPorts();
         return portsToJedisHosts(ports);
     }
