@@ -24,6 +24,7 @@ Usage
 Running RedisServer cluster like :
 
 ```java
+
         List<ClusterMaster> masters1 = new LinkedList<ClusterMaster>();
         masters1.add(new ClusterMaster("127.0.0.1", 9400,
                 3, 0));
@@ -31,17 +32,6 @@ Running RedisServer cluster like :
         List<ClusterSlave> slaves1 = new LinkedList<ClusterSlave>();
         slaves1.add(new ClusterSlave("127.0.0.1", 9410,
                 "127.0.0.1", 9400));
-
-        RedisCluster redisCluster1 = RedisCluster.builder()
-                .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
-                .basicAuthPassword("password") // can be omitted(if you don't want use AUTH)
-                .masters(masters1)
-                .slaves(slaves1)
-                .meetWith("127.0.0.1", 9400)
-                .build();
-
-        redisCluster1.start();
-
 
         List<ClusterMaster> masters2 = new LinkedList<ClusterMaster>();
         masters2.add(new ClusterMaster("127.0.0.1", 9500,
@@ -51,18 +41,6 @@ Running RedisServer cluster like :
         slaves2.add(new ClusterSlave("127.0.0.1", 9510,
                 "127.0.0.1", 9500));
 
-        RedisCluster redisCluster2 = RedisCluster.builder()
-                .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
-                .basicAuthPassword("password") // can be omitted(if you don't want use AUTH)
-                .masters(masters2)
-                .slaves(slaves2)
-                .meetWith("127.0.0.1", 9400)
-                .build();
-
-        redisCluster2.start();
-
-
-
         List<ClusterMaster> masters3 = new LinkedList<ClusterMaster>();
         masters3.add(new ClusterMaster("127.0.0.1", 9600,
                 3, 2));
@@ -71,19 +49,27 @@ Running RedisServer cluster like :
         slaves3.add(new ClusterSlave("127.0.0.1", 9610,
                 "127.0.0.1", 9600));
 
-        RedisCluster redisCluster3 = RedisCluster.builder()
+        List<ClusterMaster> mastersAll = new LinkedList<>();
+        List<ClusterSlave> slavesAll = new LinkedList<>();
+
+        mastersAll.addAll(masters1);
+        mastersAll.addAll(masters2);
+        mastersAll.addAll(masters3);
+
+        slavesAll.addAll(slaves1);
+        slavesAll.addAll(slaves2);
+        slavesAll.addAll(slaves3);
+
+        RedisCluster redisCluster = RedisCluster.builder()
                 .clusterNodeTimeoutMS(1000) // can be omitted, default is 3 seconds
                 .basicAuthPassword("password") // can be omitted(if you don't want use AUTH)
-                .masters(masters3)
-                .slaves(slaves3)
+                .masters(mastersAll)
+                .slaves(slavesAll)
                 .meetWith("127.0.0.1", 9400)
                 .build();
 
-        redisCluster3.setWaitForClusterTimeoutMS(10000).start();
+        redisCluster.start();
 
-        Thread.sleep(5000);
-
-        redisCluster1.stop();
-        redisCluster2.stop();
-        redisCluster3.stop();
+        Thread.sleep(15000);
+        redisCluster.stop();
 ```
