@@ -1,0 +1,26 @@
+2091:X 18 May 18:04:58.961 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+2091:X 18 May 18:04:58.962 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=2091, just started
+2091:X 18 May 18:04:58.962 # Configuration loaded
+2091:X 18 May 18:04:58.963 # You requested maxclients of 10000 requiring at least 10032 max file descriptors.
+2091:X 18 May 18:04:58.963 # Server can't set maximum open files to 10032 because of OS error: Operation not permitted.
+2091:X 18 May 18:04:58.963 # Current maximum open files is 4096. maxclients has been reduced to 4064 to compensate for low ulimit. If you need higher maxclients increase 'ulimit -n'.
+                _._
+           _.-``__ ''-._
+      _.-``    `.  `_.  ''-._           Redis 4.0.9 (00000000/0) 64 bit
+  .-`` .-```.  ```\/    _.,_ ''-._
+ (    '      ,       .-`  | `,    )     Running in sentinel mode
+ |`-._`-...-` __...-.``-._|'` _.-'|     Port: 6379
+ |    `-._   `._    /     _.-'    |     PID: 2091
+  `-._    `-._  `-./  _.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |           http://redis.io
+  `-._    `-._`-.__.-'_.-'    _.-'
+ |`-._`-._    `-.__.-'    _.-'_.-'|
+ |    `-._`-._        _.-'_.-'    |
+  `-._    `-._`-.__.-'_.-'    _.-'
+      `-._    `-.__.-'    _.-'
+          `-._        _.-'
+              `-.__.-'
+
+2091:X 18 May 18:04:58.964 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+2091:X 18 May 18:04:58.970 # Sentinel ID is 70592a23712d81e2ebc460624a95a0a0fd13a737
