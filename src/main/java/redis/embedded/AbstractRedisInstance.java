@@ -28,15 +28,20 @@ abstract class AbstractRedisInstance implements Redis {
         return active;
     }
 
-	@Override
+    @Override
     public synchronized void start() throws EmbeddedRedisException {
+        start(redisReadyPattern());
+    }
+
+    @Override
+    public synchronized void start(String redisReadyPattern) throws EmbeddedRedisException {
         if (active) {
             throw new EmbeddedRedisException("This redis server instance is already running...");
         }
         try {
             redisProcess = createRedisProcessBuilder().start();
             logErrors();
-            awaitRedisServerReady();
+            awaitRedisServerReady(redisReadyPattern);
             active = true;
         } catch (IOException e) {
             throw new EmbeddedRedisException("Failed to start Redis instance", e);
@@ -51,7 +56,7 @@ abstract class AbstractRedisInstance implements Redis {
         executor.submit(printReaderTask);
     }
 
-    private void awaitRedisServerReady() throws IOException {
+    private void awaitRedisServerReady(String redisReadyPattern) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
         try {
             String outputLine;
@@ -61,7 +66,7 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-            } while (!outputLine.matches(redisReadyPattern()));
+            } while (!outputLine.matches(redisReadyPattern));
         } finally {
             IOUtils.closeQuietly(reader);
         }
