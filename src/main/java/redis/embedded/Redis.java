@@ -9,6 +9,8 @@ public interface Redis {
 
     void start() throws EmbeddedRedisException;
 
+    void start(String redisReadyPattern) throws EmbeddedRedisException;
+
     void stop() throws EmbeddedRedisException;
 
     List<Integer> ports();

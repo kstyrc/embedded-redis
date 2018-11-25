@@ -42,6 +42,16 @@ public class RedisCluster implements Redis {
     }
 
     @Override
+    public void start(String redisReadyPattern) throws EmbeddedRedisException {
+        for(Redis redis : sentinels) {
+            redis.start(redisReadyPattern);
+        }
+        for(Redis redis : servers) {
+            redis.start(redisReadyPattern);
+        }
+    }
+
+    @Override
     public void stop() throws EmbeddedRedisException {
         for(Redis redis : sentinels) {
             redis.stop();
