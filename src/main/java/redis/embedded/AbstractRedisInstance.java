@@ -13,8 +13,11 @@ import org.apache.commons.io.IOUtils;
 
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
+
     private volatile boolean active = false;
-	private Process redisProcess;
+
+    private Process redisProcess;
+
     private final int port;
 
     private ExecutorService executor;
@@ -28,7 +31,7 @@ abstract class AbstractRedisInstance implements Redis {
         return active;
     }
 
-	@Override
+    @Override
     public synchronized void start() throws EmbeddedRedisException {
         if (active) {
             throw new EmbeddedRedisException("This redis server instance is already running...");
@@ -55,11 +58,15 @@ abstract class AbstractRedisInstance implements Redis {
         BufferedReader reader = new BufferedReader(new InputStreamReader(redisProcess.getInputStream()));
         try {
             String outputLine;
+            StringBuilder output = new StringBuilder();
             do {
                 outputLine = reader.readLine();
                 if (outputLine == null) {
                     //Something goes wrong. Stream is ended before server was activated.
+                    System.out.println(output);
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
+                } else {
+                    output.append(outputLine);
                 }
             } while (!outputLine.matches(redisReadyPattern()));
         } finally {
