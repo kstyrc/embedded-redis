@@ -1,5 +1,6 @@
 package redis.embedded;
 
+import org.apache.commons.io.IOUtils;
 import redis.embedded.exceptions.EmbeddedRedisException;
 
 import java.io.*;
@@ -8,8 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import org.apache.commons.io.IOUtils;
 
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
@@ -61,13 +60,13 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-            } while (!outputLine.matches(redisReadyPattern()));
+            } while (!isReady(outputLine));
         } finally {
             IOUtils.closeQuietly(reader);
         }
     }
 
-    protected abstract String redisReadyPattern();
+    protected abstract boolean isReady(String outputLine);
 
     private ProcessBuilder createRedisProcessBuilder() {
         File executable = new File(args.get(0));
