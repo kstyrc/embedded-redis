@@ -16,7 +16,7 @@ public class RedisClusterBuilder {
     private int quorumSize = 1;
     private PortProvider sentinelPortProvider = new SequencePortProvider(26379);
     private PortProvider replicationGroupPortProvider = new SequencePortProvider(6379);
-    private final List<ReplicationGroup> groups = new LinkedList<ReplicationGroup>();
+    private final List<ReplicationGroup> groups = new LinkedList<>();
 
     public RedisClusterBuilder withSentinelBuilder(RedisSentinelBuilder sentinelBuilder) {
         this.sentinelBuilder = sentinelBuilder;
@@ -83,7 +83,7 @@ public class RedisClusterBuilder {
     }
 
     private List<Redis> buildServers() {
-        List<Redis> servers = new ArrayList<Redis>();
+        List<Redis> servers = new ArrayList<>();
         for(ReplicationGroup g : groups) {
             servers.add(buildMaster(g));
             buildSlaves(servers, g);
@@ -108,7 +108,7 @@ public class RedisClusterBuilder {
 
     private List<Redis> buildSentinels() {
         int toBuild = this.sentinelCount;
-        final List<Redis> sentinels = new LinkedList<Redis>();
+        final List<Redis> sentinels = new LinkedList<>();
         while (toBuild-- > 0) {
             sentinels.add(buildSentinel());
         }
@@ -134,7 +134,7 @@ public class RedisClusterBuilder {
     private static class ReplicationGroup {
         private final String masterName;
         private final int masterPort;
-        private final List<Integer> slavePorts = new LinkedList<Integer>();
+        private final List<Integer> slavePorts = new LinkedList<>();
 
         private ReplicationGroup(String masterName, int slaveCount, PortProvider portProvider) {
             this.masterName = masterName;

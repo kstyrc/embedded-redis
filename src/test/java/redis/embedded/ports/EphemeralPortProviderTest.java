@@ -16,7 +16,7 @@ public class EphemeralPortProviderTest {
         final EphemeralPortProvider provider = new EphemeralPortProvider();
 
         //when
-        final List<Integer> ports = new ArrayList<Integer>();
+        final List<Integer> ports = new ArrayList<>();
         for(int i = 0;i < portCount; i++) {
             ports.add(provider.next());
         }

@@ -8,8 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class RedisCluster implements Redis {
-    private final List<Redis> sentinels = new LinkedList<Redis>();
-    private final List<Redis> servers = new LinkedList<Redis>();
+    private final List<Redis> sentinels = new LinkedList<>();
+    private final List<Redis> servers = new LinkedList<>();
 
     RedisCluster(List<Redis> sentinels, List<Redis> servers) {
         this.servers.addAll(servers);
@@ -53,7 +53,7 @@ public class RedisCluster implements Redis {
 
     @Override
     public List<Integer> ports() {
-        List<Integer> ports = new ArrayList<Integer>();
+        List<Integer> ports = new ArrayList<>();
         ports.addAll(sentinelPorts());
         ports.addAll(serverPorts());
         return ports;
@@ -64,7 +64,7 @@ public class RedisCluster implements Redis {
     }
 
     public List<Integer> sentinelPorts() {
-        List<Integer> ports = new ArrayList<Integer>();
+        List<Integer> ports = new ArrayList<>();
         for(Redis redis : sentinels) {
             ports.addAll(redis.ports());
         }
@@ -76,7 +76,7 @@ public class RedisCluster implements Redis {
     }
 
     public List<Integer> serverPorts() {
-        List<Integer> ports = new ArrayList<Integer>();
+        List<Integer> ports = new ArrayList<>();
         for(Redis redis : servers) {
             ports.addAll(redis.ports());
         }

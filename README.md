@@ -159,6 +159,11 @@ When not provided with the desired redis executable, RedisServer runs os-depende
 - Redis 2.8.19 in case of OSX
 - Redis 2.8.19 in case of Windows: https://github.com/MSOpenTech/redis/releases/tag/win-2.8.19
 
+Other available embedded RedisServer versions:
+- Redis 3.0.7, 3.2.13, 4.0.14, 5.0.5. 
+  To select specific version, call `RedisExecProvider.override()` with `2.8`, `3.0`. `3.2`, `4.0`, or `5.0`.
+  Note, builds for some OS may be unavailable and need to be added.
+
 However, you should provide RedisServer with redis executable if you need specific version.
 
 
@@ -179,6 +184,11 @@ Contributors
 
 Changelog
 ==============
+
+### 0.7
+ * Support JDK 8 +
+ * Added support for different Redis versions (2.8, 3.0, 3.2, 4.0, 5.0)
+ * Added binaries (Linux 64-bit only) for 3.0, 3.2, 4.0, 5.0. Feel free to add other OS builds.
 
 ### 0.6
  * Support JDK 6 +

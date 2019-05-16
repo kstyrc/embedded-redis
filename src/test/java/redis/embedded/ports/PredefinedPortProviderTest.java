@@ -19,7 +19,7 @@ public class PredefinedPortProviderTest {
         final PredefinedPortProvider provider = new PredefinedPortProvider(ports);
 
         //when
-        final List<Integer> returnedPorts = new ArrayList<Integer>();
+        final List<Integer> returnedPorts = new ArrayList<>();
         for(int i = 0;i < ports.size(); i++) {
             returnedPorts.add(provider.next());
         }

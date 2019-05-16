@@ -19,7 +19,7 @@ public class JedisUtil {
     }
 
     public static Set<String> portsToJedisHosts(List<Integer> ports) {
-        Set<String> hosts = new HashSet<String>();
+        Set<String> hosts = new HashSet<>();
         for(Integer p : ports) {
             hosts.add("localhost:" + p);
         }

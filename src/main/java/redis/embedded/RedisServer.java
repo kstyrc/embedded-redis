@@ -7,21 +7,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RedisServer extends AbstractRedisInstance {
-    private static final String REDIS_READY_PATTERN = ".*The server is now ready to accept connections on port.*";
+    /**
+     * Redis < 4.0 outputs "The server is now ready to accept connections on port"
+     * Redis 4.0+ outputs "Ready to accept connections"
+     */
+    private static final String REDIS_READY_PATTERN = ".*(The server is now ready to accept connections on port|Ready to accept connections).*";
     private static final int DEFAULT_REDIS_PORT = 6379;
 
     public RedisServer() throws IOException {
-        this(DEFAULT_REDIS_PORT);
+        this(RedisExecProvider.defaultProvider(), DEFAULT_REDIS_PORT);
     }
 
     public RedisServer(int port) throws IOException {
-        super(port);
-        File executable = RedisExecProvider.defaultProvider().get();
-        this.args = Arrays.asList(
-                executable.getAbsolutePath(),
-                "--port", Integer.toString(port)
-        );
-	}
+        this(RedisExecProvider.defaultProvider(), port);
+    }
+
+    public RedisServer(RedisExecProvider redisExecProvider) throws IOException {
+        this(redisExecProvider, DEFAULT_REDIS_PORT);
+    }
 
     public RedisServer(File executable, int port) {
         super(port);
@@ -41,7 +44,7 @@ public class RedisServer extends AbstractRedisInstance {
 
     RedisServer(List<String> args, int port) {
         super(port);
-        this.args = new ArrayList<String>(args);
+        this.args = new ArrayList<>(args);
     }
 
     public static RedisServerBuilder builder() {
