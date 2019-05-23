@@ -22,7 +22,8 @@ public class RedisSentinelBuilder {
     private File executable;
     private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
     private Integer port = 26379;
-    private int masterPort = 6379;
+    private String readyPattern = RedisSentinel.REDIS_SENTINEL_READY_PATTERN;
+    private int masterPort = RedisServer.DEFAULT_REDIS_PORT;
     private String masterName = "mymaster";
     private long downAfterMilliseconds = 60000L;
     private long failoverTimeout = 180000L;
@@ -39,6 +40,11 @@ public class RedisSentinelBuilder {
 
     public RedisSentinelBuilder port(Integer port) {
         this.port = port;
+        return this;
+    }
+
+    public RedisSentinelBuilder readyPattern(String readyPattern) {
+        this.readyPattern = readyPattern;
         return this;
     }
 
@@ -97,7 +103,11 @@ public class RedisSentinelBuilder {
     public RedisSentinel build() {
         tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
-        return new RedisSentinel(args, port);
+        if (this.readyPattern == null) {
+            return new RedisSentinel(args, port);
+        } else {
+            return new RedisSentinel(args, port, readyPattern);
+        }
     }
 
     private void tryResolveConfAndExec() {
