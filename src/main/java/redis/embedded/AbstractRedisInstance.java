@@ -16,11 +16,13 @@ abstract class AbstractRedisInstance implements Redis {
     private volatile boolean active = false;
 	private Process redisProcess;
     private final int port;
+    private String redisReadyPattern;
 
     private ExecutorService executor;
 
-    protected AbstractRedisInstance(int port) {
+    protected AbstractRedisInstance(int port, String redisReadyPattern) {
         this.port = port;
+        this.redisReadyPattern = redisReadyPattern;
     }
 
     @Override
@@ -61,13 +63,11 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-            } while (!outputLine.matches(redisReadyPattern()));
+            } while (!outputLine.matches(redisReadyPattern));
         } finally {
             IOUtils.closeQuietly(reader);
         }
     }
-
-    protected abstract String redisReadyPattern();
 
     private ProcessBuilder createRedisProcessBuilder() {
         File executable = new File(args.get(0));

@@ -17,7 +17,8 @@ public class RedisServerBuilder {
 
     private File executable;
     private RedisExecProvider redisExecProvider = RedisExecProvider.defaultProvider();
-    private int port = 6379;
+    private int port = RedisServer.DEFAULT_REDIS_PORT;
+    private String readyPattern = RedisServer.REDIS_STANDALONE_READY_PATTERN;
     private InetSocketAddress slaveOf;
     private String redisConf;
 
@@ -30,6 +31,11 @@ public class RedisServerBuilder {
 
     public RedisServerBuilder port(int port) {
         this.port = port;
+        return this;
+    }
+
+    public RedisServerBuilder readyPattern(String readyPattern) {
+        this.readyPattern = readyPattern;
         return this;
     }
 
@@ -68,7 +74,7 @@ public class RedisServerBuilder {
     public RedisServer build() {
         tryResolveConfAndExec();
         List<String> args = buildCommandArgs();
-        return new RedisServer(args, port);
+        return new RedisServer(args, port, readyPattern);
     }
 
     public void reset() {
