@@ -15,11 +15,11 @@ Maven Central:
 <dependency>
   <groupId>com.github.kstyrc</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.6</version>
+  <version>0.7</version>
 </dependency>
 ```
 
-Previous releases (before 0.6):
+Previous releases (before 0.7):
 ```xml
 <repository>
   <id>clojars.org</id>
@@ -31,7 +31,7 @@ Previous releases (before 0.6):
 <dependency>
   <groupId>redis.embedded</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.5</version>
+  <version>0.6</version>
 </dependency>
 ```
 
@@ -155,9 +155,9 @@ Redis version
 ==============
 
 When not provided with the desired redis executable, RedisServer runs os-dependent executable enclosed in jar. Currently is uses:
-- Redis 2.8.19 in case of Linux/Unix
-- Redis 2.8.19 in case of OSX
-- Redis 2.8.19 in case of Windows: https://github.com/MSOpenTech/redis/releases/tag/win-2.8.19
+- Redis 2.8.24 in case of Linux/Unix
+- Redis 2.8.24 in case of OSX
+- Redis 2.8.24 in case of Windows: https://github.com/microsoftarchive/redis/releases/tag/win-2.8.2401
 
 However, you should provide RedisServer with redis executable if you need specific version.
 
@@ -179,6 +179,8 @@ Contributors
 
 Changelog
 ==============
+### 0.7
+ * Updated redis version to 2.8.24 for all platform
 
 ### 0.6
  * Support JDK 6 +
