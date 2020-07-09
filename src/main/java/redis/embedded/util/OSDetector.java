@@ -54,7 +54,9 @@ public class OSDetector {
             input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
             while ((line = input.readLine()) != null) {
                 if (line.length() > 0) {
-                    if (line.contains("64")) {
+                    if (line.equals("ppc64le")) {
+                        return Architecture.ppc64le;
+                    } else if (line.contains("64")) {
                         return Architecture.x86_64;
                     }
                 }
