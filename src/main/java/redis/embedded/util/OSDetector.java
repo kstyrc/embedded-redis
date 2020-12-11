@@ -55,7 +55,12 @@ public class OSDetector {
             while ((line = input.readLine()) != null) {
                 if (line.length() > 0) {
                     if (line.contains("64")) {
-                        return Architecture.x86_64;
+                        if (line.contains("aarch")){
+                            return Architecture.aarch64;
+                        }
+                        else{
+                            return Architecture.x86_64;
+                        }
                     }
                 }
             }

@@ -24,6 +24,7 @@ public class RedisExecProvider {
     }
 
     private void initExecutables() {
+        executables.put(OsArchitecture.UNIX_aarch64, "redis-server");
         executables.put(OsArchitecture.WINDOWS_x86, "redis-server-2.8.19.exe");
         executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-2.8.19.exe");
 
