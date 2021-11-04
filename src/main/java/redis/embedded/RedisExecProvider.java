@@ -12,18 +12,19 @@ import java.io.IOException;
 import java.util.Map;
 
 public class RedisExecProvider {
-    
+
     private final Map<OsArchitecture, String> executables = Maps.newHashMap();
 
     public static RedisExecProvider defaultProvider() {
         return new RedisExecProvider();
     }
-    
+
     private RedisExecProvider() {
         initExecutables();
     }
 
     private void initExecutables() {
+        executables.put(OsArchitecture.UNIX_aarch64, "redis-server");
         executables.put(OsArchitecture.WINDOWS_x86, "redis-server-2.8.19.exe");
         executables.put(OsArchitecture.WINDOWS_x86_64, "redis-server-2.8.19.exe");
 
@@ -47,14 +48,14 @@ public class RedisExecProvider {
         executables.put(new OsArchitecture(os, arch), executable);
         return this;
     }
-    
+
     public File get() throws IOException {
         OsArchitecture osArch = OsArchitecture.detect();
         String executablePath = executables.get(osArch);
-         return fileExists(executablePath) ?
+        return fileExists(executablePath) ?
                 new File(executablePath) :
                 JarUtil.extractExecutableFromJar(executablePath);
-        
+
     }
 
     private boolean fileExists(String executablePath) {

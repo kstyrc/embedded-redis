@@ -14,7 +14,7 @@ import org.apache.commons.io.IOUtils;
 abstract class AbstractRedisInstance implements Redis {
     protected List<String> args = Collections.emptyList();
     private volatile boolean active = false;
-	private Process redisProcess;
+    private Process redisProcess;
     private final int port;
 
     private ExecutorService executor;
@@ -28,7 +28,7 @@ abstract class AbstractRedisInstance implements Redis {
         return active;
     }
 
-	@Override
+    @Override
     public synchronized void start() throws EmbeddedRedisException {
         if (active) {
             throw new EmbeddedRedisException("This redis server instance is already running...");
@@ -61,7 +61,7 @@ abstract class AbstractRedisInstance implements Redis {
                     //Something goes wrong. Stream is ended before server was activated.
                     throw new RuntimeException("Can't start redis server. Check logs for details.");
                 }
-            } while (!outputLine.matches(redisReadyPattern()));
+            } while (!outputLine.contains(redisReadyPattern()));
         } finally {
             IOUtils.closeQuietly(reader);
         }
