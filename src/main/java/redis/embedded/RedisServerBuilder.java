@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -87,7 +88,7 @@ public class RedisServerBuilder {
 
     private void resolveConfAndExec() throws IOException {
         if (redisConf == null && redisConfigBuilder != null) {
-            File redisConfigFile = File.createTempFile(resolveConfigName(), ".conf");
+            File redisConfigFile = Files.createTempFile(resolveConfigName(), ".conf").toFile();
             redisConfigFile.deleteOnExit();
             Files.write(redisConfigBuilder.toString(), redisConfigFile, Charset.forName("UTF-8"));
             redisConf = redisConfigFile.getAbsolutePath();
