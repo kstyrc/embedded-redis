@@ -1,4 +1,4 @@
-embedded-redis
+embedded-redis 🚀
 ==============
 
 Redis embedded server for Java integration testing
@@ -9,25 +9,9 @@ Maven dependency
 Maven Central:
 ```xml
 <dependency>
-  <groupId>com.github.kstyrc</groupId>
+  <groupId>com.github.vjsantojaca</groupId>
   <artifactId>embedded-redis</artifactId>
-  <version>0.6</version>
-</dependency>
-```
-
-Previous releases (before 0.6):
-```xml
-<repository>
-  <id>clojars.org</id>
-  <url>http://clojars.org/repo</url>
-</repository>
-
-...
-
-<dependency>
-  <groupId>redis.embedded</groupId>
-  <artifactId>embedded-redis</artifactId>
-  <version>0.5</version>
+  <version>0.7</version>
 </dependency>
 ```
 
@@ -176,6 +160,10 @@ Contributors
 
 Changelog
 ==============
+
+### 0.7
+ * It is possible to use in MacOS 14.0
+ * Update to JDK 7
 
 ### 0.6
  * Support JDK 6 +
