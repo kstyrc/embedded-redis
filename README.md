@@ -6,7 +6,7 @@ Redis embedded server for Java integration testing
 Maven dependency
 ==============
 
-Maven Central:
+Maven Central (not yet)
 ```xml
 <dependency>
   <groupId>com.github.vjsantojaca</groupId>
