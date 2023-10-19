@@ -1,0 +1,32 @@
+name: 'Release PR Merged'
+
+on:
+  pull_request:
+    types:
+      - open
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Latest Commit
+      uses: actions/checkout@v2
+    - name: Bump Version
+      id: bump
+      uses: nnichols/maven-version-bump-action@v4
+      with:
+        github-token: ${{ secrets.github_token }}
+    - name: Print Version
+      run: "echo 'NEW_VERSION: ${{steps.bump.outputs.version}}' && NEW_VERSION=${{steps.bump.outputs.version}}"
+   # - name: Modify Maven version
+   #   run: "sed -i 's/search_string/replace_string/' filename"
+   # - name: Add, Commit && Tag
+   #   run: |
+   #     git config --global user.name "Víctor Santoja"
+   #     git config --global user.email "victorsantoja@gmail.com"
+   #     git add pom.xml
+   #     git commit -m "New version ${{env.NEW_VERSION}}"
+   #     git push
+   # - name: Generate jar
+   #  run: mvn clean package
