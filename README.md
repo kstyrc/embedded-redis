@@ -175,6 +175,7 @@ Contributors
  * Artem Orobets ([@enisher](http://github.com/enisher))
  * Sean Simonsen ([@SeanSimonsen](http://github.com/SeanSimonsen))
  * Rob Winch ([@rwinch](http://github.com/rwinch))
+ * JongBeom Lee ([@devleejb](http://github.com/devleejb))
 
 
 Changelog
